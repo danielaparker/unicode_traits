@@ -11,41 +11,40 @@ using namespace unicons;
 TEST_CASE("utf8") 
 {
     std::string source = "Hello world";
-    const char* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                               target, &stop,
-                                               conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(source == target);
     }
 
     SECTION("append to utf16 string")
     {
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                               target, &stop,
-                                               conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(u"Hello world" == target);
     }
 
     SECTION("append to utf32 string")
     {
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                               target, &stop,
-                                               conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(U"Hello world" == target);
     }
 }
@@ -53,41 +52,40 @@ TEST_CASE("utf8")
 TEST_CASE( "utf16") 
 {
     std::u16string source = u"Hello world";
-    const char16_t* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                   target, &stop,
-                                                   conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK("Hello world" == target);
     }
 
     SECTION("append to utf16 string")
     {
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                   target, &stop,
-                                                   conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(u"Hello world" == target);
     }
 
     SECTION("append to utf32 string")
     {
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                  target, &stop,
-                                                  conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(U"Hello world" == target);
     }
 }
@@ -95,41 +93,40 @@ TEST_CASE( "utf16")
 TEST_CASE( "utf32") 
 {
     std::u32string source = U"Hello world";
-    const char32_t* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                   target, &stop,
-                                                   conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK("Hello world" == target);
     }
 
     SECTION("append to utf16 string")
     {
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                   target, &stop,
-                                                   conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(u"Hello world" == target);
     }
 
     SECTION("append to utf32 string")
     {
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                   target, &stop,
-                                                   conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(U"Hello world" == target);
     }
 }
@@ -140,17 +137,16 @@ TEST_CASE("utf8 tests")
                          "\xc2\x80"
                          "\xc3\xbf"
                          "\xcf\xbf";
-    const char* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(source == target);
     }
 
@@ -161,13 +157,13 @@ TEST_CASE("utf8 tests")
                                   u"\xff"
                                   u"\x03ff";
 
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
@@ -178,13 +174,13 @@ TEST_CASE("utf8 tests")
                                   U"\xff"
                                   U"\x03ff";
 
-        const char* stop = nullptr;
+        std::string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 }
@@ -195,7 +191,6 @@ TEST_CASE("utf16 tests")
                               u"\x80"
                               u"\xff"
                               u"\x03ff";
-    const char16_t* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
@@ -204,26 +199,26 @@ TEST_CASE("utf16 tests")
                              "\xc3\xbf"
                              "\xcf\xbf";
 
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
     SECTION("append to utf16 string")
     {
 
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(source == target);
     }
 
@@ -234,13 +229,13 @@ TEST_CASE("utf16 tests")
                                   U"\xff"
                                   U"\x03ff";
 
-        const char16_t* stop = nullptr;
+        std::u16string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char16_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 }
@@ -251,7 +246,6 @@ TEST_CASE("utf32 tests")
                             U"\x80"
                             U"\xff"
                             U"\x03ff";
-    const char32_t* source_end = source.data() + source.length();
 
     SECTION("append to utf8 string")
     {
@@ -260,13 +254,13 @@ TEST_CASE("utf32 tests")
                              "\xc3\xbf"
                              "\xcf\xbf";
 
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
@@ -277,26 +271,26 @@ TEST_CASE("utf32 tests")
                                   u"\xff"
                                   u"\x03ff";
 
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::u16string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
     SECTION("append to utf32 string")
     {
 
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
         std::u32string target;
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                             target, &stop,
-                                                             conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(source == target);
     }
 }
@@ -316,14 +310,13 @@ TEST_CASE("utf32 to utf8")
                                 U"\x80"
                                 U"\xff"
                                 U"\x03ff";
-        const char32_t* source_end = source.data() + source.length();
-        const char32_t* stop = nullptr;
+        std::u32string::iterator stop;
 
-        auto result = unicode_traits<char32_t>::append_to_string(source.data(),source_end,
-                                                                 target, &stop,
-                                                                 conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
@@ -334,14 +327,13 @@ TEST_CASE("utf32 to utf8")
             U'\xff',
             U'\x03ff'};
         std::basic_string<uint32_t> source(data,sizeof(data)/sizeof(uint32_t));
-        const uint32_t* source_end = source.data() + source.length();
-        const uint32_t* stop = nullptr;
+        std::basic_string<uint32_t>::iterator stop;
 
-        auto result = unicode_traits<uint32_t>::append_to_string(source.data(),source_end,
-                                                                 target, &stop,
-                                                                 conversion_flags ::strict);
+        auto result = append_to_string(source.begin(),source.end(),
+                                       target, &stop,
+                                       conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 
@@ -352,14 +344,13 @@ TEST_CASE("utf32 to utf8")
             U'\xff',
             U'\x03ff' };
         std::basic_string<int32_t> source(data, sizeof(data) / sizeof(int32_t));
-        const int32_t* source_end = source.data() + source.length();
-        const int32_t* stop = nullptr;
+        std::basic_string<int32_t>::iterator stop;
 
-        auto result = unicode_traits<int32_t>::append_to_string(source.data(), source_end,
-            target, &stop,
-            conversion_flags::strict);
+        auto result = append_to_string(source.begin(), source.end(),
+                                       target, &stop,
+                                       conversion_flags::strict);
         REQUIRE(result == conversion_result::ok);
-        CHECK(stop == source_end);
+        CHECK(stop == source.end());
         CHECK(expected == target);
     }
 }
