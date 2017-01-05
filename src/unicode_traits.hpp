@@ -2,17 +2,15 @@
 // Distributed under the Boost license, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-// See https://github.com/danielaparker/jsoncons for latest version
+// See https://github.com/danielaparker/unicode_traits for latest version
 
 /*
- * Includes Unicode, Inc decomposition code derived from ConvertUTF.h and ConvertUTF.c 
+ * Includes code derived from Unicode, Inc decomposition code in ConvertUTF.h and ConvertUTF.c 
  * http://www.unicode.org/  
  *  
- * Unicode, Inc. hereby grants the right to freely use the information
+ * "Unicode, Inc. hereby grants the right to freely use the information
  * supplied in this file in the creation of products supporting the
- * Unicode Standard, and to make copies of this file in any form
- * for internal or external distribution as long as this notice
- * remains attached.
+ * Unicode Standard."
 */
 
 #ifndef UNICONS_UNICODE_TRAITS_HPP
