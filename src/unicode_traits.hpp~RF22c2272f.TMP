@@ -612,8 +612,7 @@ struct unicode_traits<CharT,
 // utf8
 
 template <class Iterator>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value 
-                              && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t), 
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t), 
                               conversion_result>::type
 is_legal_utf8(Iterator source, size_t length) 
 {
@@ -659,6 +658,15 @@ struct is_output_iterator<I, E, void_t<
     decltype(*std::declval<I>() = std::declval<E>())>> : std::true_type {};
 
 template<class OutputIt, class CharT, class Enable = void>
+struct is_container_type_iterator : std::false_type {};
+
+template<class OutputIt, class CharT>
+struct is_container_type_iterator<OutputIt,CharT,
+    typename std::enable_if<(std::is_integral<typename OutputIt::container_type::value_type>::value 
+                             && sizeof(typename OutputIt::container_type::value_type) == sizeof(CharT))>::type
+> : std::true_type {};
+
+template<class OutputIt, class CharT, class Enable = void>
 struct is_compatible_output_iterator : std::false_type {};
 
 template<class OutputIt, class CharT>
@@ -666,10 +674,10 @@ struct is_compatible_output_iterator<OutputIt,CharT,
     typename std::enable_if<(is_output_iterator<OutputIt,CharT>::value
                              && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
                              && std::is_integral<typename OutputIt::container_type::value_type>::value 
-                             && !std::is_void<typename OutputIt::container_type::value_type>::value
+                             && !std::is_void<OutputIt::container_type::value_type>::value
                              && sizeof(typename OutputIt::container_type::value_type) == sizeof(CharT))>::type
 > : std::true_type {};
-
+/*
 template<class OutputIt, class CharT>
 struct is_compatible_output_iterator<OutputIt,CharT,
     typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
@@ -683,7 +691,7 @@ struct is_compatible_output_iterator<OutputIt,CharT,
                              && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
                              && sizeof(typename OutputIt::char_type) == sizeof(CharT))>::type
 > : std::true_type {};
-
+*/
 template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,conversion_result>::type 
@@ -749,17 +757,16 @@ convert(Iterator source, Iterator source_end,
     return result;
 }
 */
-
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
-                               && is_compatible_output_iterator<OutputIt,uint16_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, 
-                 InputIt* source_stop, conversion_flags  flags = conversion_flags ::strict) 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, 
+                 Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source != source_end) 
     {
         uint32_t ch = 0;
@@ -795,10 +802,10 @@ convert(InputIt source_begin, InputIt source_end,
                     result = conversion_result::source_illegal;
                     break;
                 } else {
-                    *target++ = (uni_replacement_char);
+                    target.push_back(uni_replacement_char);
                 }
             } else {
-                *target++ = ((uint16_t)ch); /* normal case */
+                target.push_back((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_utf16) {
             if (flags == conversion_flags ::strict) {
@@ -806,29 +813,29 @@ convert(InputIt source_begin, InputIt source_end,
                 source -= (extra_bytes_to_read+1); /* return to the start */
                 break; /* Bail out; shouldn't continue */
             } else {
-                *target++ = (uni_replacement_char);
+                target.push_back(uni_replacement_char);
             }
         } else {
             /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            *target++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
-            *target++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
+            target.push_back((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            target.push_back((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
-                               && is_compatible_output_iterator<OutputIt,uint32_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, 
-                 InputIt* source_stop, conversion_flags  flags = conversion_flags ::strict) 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, 
+                 Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source < source_end) 
     {
         uint32_t ch = 0;
@@ -866,14 +873,14 @@ convert(InputIt source_begin, InputIt source_end,
                     result = conversion_result::source_illegal;
                     break;
                 } else {
-                    *target++ = (uni_replacement_char);
+                    target.push_back(uni_replacement_char);
                 }
             } else {
-                *target++ = (ch);
+                target.push_back(ch);
             }
         } else { /* i.e., ch > uni_max_legal_utf32 */
             result = conversion_result::source_illegal;
-            *target++ = (uni_replacement_char);
+            target.push_back(uni_replacement_char);
         }
     }
     *source_stop = source;
@@ -882,14 +889,14 @@ convert(InputIt source_begin, InputIt source_end,
 
 // utf16
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
-                               && is_compatible_output_iterator<OutputIt,uint8_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, InputIt* source_stop, 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) {
     conversion_result result = conversion_result::ok;
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source < source_end) {
         unsigned short bytes_to_write = 0;
         const uint32_t byteMask = 0xBF;
@@ -951,22 +958,22 @@ convert(InputIt source_begin, InputIt source_end,
         switch (bytes_to_write) 
         {
         case 4: 
-            *target++ = (byte1);
-            *target++ = (byte2);
-            *target++ = (byte3);
-            *target++ = (byte4);
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            target.push_back(byte4);
             break;
         case 3: 
-            *target++ = (byte1);
-            *target++ = (byte2);
-            *target++ = (byte3);
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
             break;
         case 2: 
-            *target++ = (byte1);
-            *target++ = (byte2);
+            target.push_back(byte1);
+            target.push_back(byte2);
             break;
         case 1: 
-            *target++ = (byte1);
+            target.push_back(byte1);
             break;
         }
     }
@@ -974,16 +981,16 @@ convert(InputIt source_begin, InputIt source_end,
     return result;
 }
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
-                               && is_compatible_output_iterator<OutputIt,uint16_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, InputIt* source_stop, 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source != source_end) 
     {
         uint32_t ch = *source++;
@@ -995,8 +1002,8 @@ convert(InputIt source_begin, InputIt source_end,
                 uint32_t ch2 = *source;
                 /* If it's a low surrogate, */
                 if (ch2 >= uni_sur_low_start && ch2 <= uni_sur_low_end) {
-                    *target++ = ((uint16_t)ch);
-                    *target++ = ((uint16_t)ch2);
+                    target.push_back((uint16_t)ch);
+                    target.push_back((uint16_t)ch2);
                     ++source;
                 } else if (flags == conversion_flags ::strict) { /* it's an unpaired high surrogate */
                     --source; /* return to the illegal value itself */
@@ -1018,28 +1025,28 @@ convert(InputIt source_begin, InputIt source_end,
             }
             else
             {
-                *target++ = ((uint16_t)ch);
+                target.push_back((uint16_t)ch);
             }
         }
         else
         {
-            *target++ = ((uint16_t)ch);
+            target.push_back((uint16_t)ch);
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
-                               && is_compatible_output_iterator<OutputIt,uint32_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, InputIt* source_stop, 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source != source_end) 
     {
         uint32_t ch = *source++;
@@ -1071,7 +1078,7 @@ convert(InputIt source_begin, InputIt source_end,
                 break;
             }
         }
-        *target++ = (ch);
+        target.push_back(ch);
     }
     *source_stop = source;
     return result;
@@ -1079,15 +1086,15 @@ convert(InputIt source_begin, InputIt source_end,
 
 // utf32
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
-                               && is_compatible_output_iterator<OutputIt,uint8_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-        OutputIt& target, 
-        InputIt* source_stop, conversion_flags  flags = conversion_flags ::strict) 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+        Container& target, 
+        Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source < source_end) {
         unsigned short bytes_to_write = 0;
         const uint32_t byteMask = 0xBF;
@@ -1130,22 +1137,22 @@ convert(InputIt source_begin, InputIt source_end,
         switch (bytes_to_write) 
         {
         case 4: 
-            *target++ = (byte1);
-            *target++ = (byte2);
-            *target++ = (byte3);
-            *target++ = (byte4);
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            target.push_back(byte4);
             break;
         case 3: 
-            *target++ = (byte1);
-            *target++ = (byte2);
-            *target++ = (byte3);
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
             break;
         case 2: 
-            *target++ = (byte1);
-            *target++ = (byte2);
+            target.push_back(byte1);
+            target.push_back(byte2);
             break;
         case 1: 
-            *target++ = (byte1);
+            target.push_back(byte1);
             break;
         }
     }
@@ -1153,16 +1160,16 @@ convert(InputIt source_begin, InputIt source_end,
     return result;
 }
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
-                               && is_compatible_output_iterator<OutputIt,uint16_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, 
-                 InputIt* source_stop, conversion_flags  flags = conversion_flags ::strict) 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, 
+                 Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source != source_end) 
     {
         uint32_t ch = *source++;
@@ -1174,38 +1181,38 @@ convert(InputIt source_begin, InputIt source_end,
                     result = conversion_result::source_illegal;
                     break;
                 } else {
-                    *target++ = (uni_replacement_char);
+                    target.push_back(uni_replacement_char);
                 }
             } else {
-                *target++ = ((uint16_t)ch); /* normal case */
+                target.push_back((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_legal_utf32) {
             if (flags == conversion_flags ::strict) {
                 result = conversion_result::source_illegal;
             } else {
-                *target++ = (uni_replacement_char);
+                target.push_back(uni_replacement_char);
             }
         } else {
             /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            *target++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
-            *target++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
+            target.push_back((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            target.push_back((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class InputIt,class OutputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
-                               && is_compatible_output_iterator<OutputIt,uint32_t>::value,conversion_result>::type 
-convert(InputIt source_begin, InputIt source_end, 
-                 OutputIt& target, InputIt* source_stop, 
+template <class Iterator,class Container>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
+convert(Iterator source_begin, Iterator source_end, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
 
-    InputIt source = source_begin;
+    Iterator source = source_begin;
     while (source != source_end) 
     {
         uint32_t ch = *source++;
@@ -1219,17 +1226,18 @@ convert(InputIt source_begin, InputIt source_end,
         }
         if (ch <= uni_max_legal_utf32)
         {
-            *target++ = (ch);
+            target.push_back(ch);
         }
         else
         {
-            *target++ = (uni_replacement_char);
+            target.push_back(uni_replacement_char);
             result = conversion_result::source_illegal;
         }
     }
     *source_stop = source;
     return result;
 }
+
 }
 
 #endif

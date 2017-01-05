@@ -98,40 +98,6 @@ TEST_CASE("is_compatible_output_iterator")
         result = is_compatible_output_iterator<std::string::iterator, wchar_t>();
         CHECK(result == false);
     }
-    SECTION("std::insert_iterator<std::string>")
-    {
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, char>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, int8_t>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, uint8_t>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, wchar_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, uint16_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, uint32_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::insert_iterator<std::string>, char32_t>();
-        CHECK(result == false);
-    }
-    SECTION("std::back_insert_iterator<std::string>")
-    {
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, char>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, int8_t>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, uint8_t>();
-        CHECK(result == true);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, wchar_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, uint16_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, uint32_t>();
-        CHECK(result == false);
-        result = is_compatible_output_iterator<std::back_insert_iterator<std::string>, char32_t>();
-        CHECK(result == false);
-    }
     SECTION("char*")
     {
         result = is_compatible_output_iterator<char*, char>();
