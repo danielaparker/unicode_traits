@@ -23,7 +23,7 @@ namespace unicons {
 /*
  * Magic values subtracted from a buffer value during UTF8 conversion.
  * This table contains as many values as there might be trailing bytes
- * in a UTF-8 sequence.
+ * in a UTF-8 sequence. Source: ConvertUTF.c
  */
 const uint32_t offsets_from_utf8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 
               0x03C82080UL, 0xFA082080UL, 0x82082080UL };
@@ -33,7 +33,7 @@ const uint32_t offsets_from_utf8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL
  * into the first byte, depending on how many bytes follow.  There are
  * as many entries in this table as there are UTF-8 sequence types.
  * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
- * for *legal* UTF-8 will be 4 or fewer bytes total.
+ * for *legal* UTF-8 will be 4 or fewer bytes total. Source: ConvertUTF.c
  */
 const uint8_t first_byte_mark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 
@@ -42,7 +42,7 @@ const uint8_t first_byte_mark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
  * get the number of trailing bytes that are supposed to follow it.
  * Note that *legal* UTF-8 values can't have 4 or 5-bytes. The table is
  * left as-is for anyone who may want to do such conversion, which was
- * allowed in earlier algorithms.
+ * allowed in earlier algorithms. Source: ConvertUTF.c
  */
 const uint8_t trailing_bytes_for_utf8[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -55,7 +55,7 @@ const uint8_t trailing_bytes_for_utf8[256] = {
     2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
 };
 
-// Some fundamental constants 
+// Some fundamental constants.  Source: ConvertUTF.h 
 const uint32_t uni_replacement_char = 0x0000FFFD;
 const uint32_t uni_max_bmp = 0x0000FFFF;
 const uint32_t uni_max_utf16 = 0x0010FFFF;
