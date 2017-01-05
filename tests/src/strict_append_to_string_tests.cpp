@@ -16,9 +16,9 @@ TEST_CASE("utf8")
     {
         std::string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
-                                       target, &stop,
-                                       conversion_flags ::strict);
+        auto result = convert(source.begin(),source.end(),
+                                target, &stop,
+                                conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
         CHECK(stop == source.end());
         CHECK(source == target);
@@ -28,7 +28,7 @@ TEST_CASE("utf8")
     {
         std::string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -40,7 +40,7 @@ TEST_CASE("utf8")
     {
         std::string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -57,7 +57,7 @@ TEST_CASE( "utf16")
     {
         std::u16string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -69,7 +69,7 @@ TEST_CASE( "utf16")
     {
         std::u16string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -81,7 +81,7 @@ TEST_CASE( "utf16")
     {
         std::u16string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -98,7 +98,7 @@ TEST_CASE( "utf32")
     {
         std::u32string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -110,7 +110,7 @@ TEST_CASE( "utf32")
     {
         std::u32string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -122,7 +122,7 @@ TEST_CASE( "utf32")
     {
         std::u32string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -142,7 +142,7 @@ TEST_CASE("utf8 tests")
     {
         std::string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -159,7 +159,7 @@ TEST_CASE("utf8 tests")
 
         std::string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -176,7 +176,7 @@ TEST_CASE("utf8 tests")
 
         std::string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -201,7 +201,7 @@ TEST_CASE("utf16 tests")
 
         std::u16string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -214,7 +214,7 @@ TEST_CASE("utf16 tests")
 
         std::u16string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -231,7 +231,7 @@ TEST_CASE("utf16 tests")
 
         std::u16string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -256,7 +256,7 @@ TEST_CASE("utf32 tests")
 
         std::u32string::iterator stop;
         std::string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -273,7 +273,7 @@ TEST_CASE("utf32 tests")
 
         std::u32string::iterator stop;
         std::u16string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -286,7 +286,7 @@ TEST_CASE("utf32 tests")
 
         std::u32string::iterator stop;
         std::u32string target;
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -312,7 +312,7 @@ TEST_CASE("utf32 to utf8")
                                 U"\x03ff";
         std::u32string::iterator stop;
 
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -329,7 +329,7 @@ TEST_CASE("utf32 to utf8")
         std::basic_string<uint32_t> source(data,sizeof(data)/sizeof(uint32_t));
         std::basic_string<uint32_t>::iterator stop;
 
-        auto result = append_to_string(source.begin(),source.end(),
+        auto result = convert(source.begin(),source.end(),
                                        target, &stop,
                                        conversion_flags ::strict);
         REQUIRE(result == conversion_result::ok);
@@ -346,7 +346,7 @@ TEST_CASE("utf32 to utf8")
         std::basic_string<int32_t> source(data, sizeof(data) / sizeof(int32_t));
         std::basic_string<int32_t>::iterator stop;
 
-        auto result = append_to_string(source.begin(), source.end(),
+        auto result = convert(source.begin(), source.end(),
                                        target, &stop,
                                        conversion_flags::strict);
         REQUIRE(result == conversion_result::ok);

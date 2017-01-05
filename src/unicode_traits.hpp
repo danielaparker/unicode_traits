@@ -649,7 +649,7 @@ is_legal_utf8(Iterator source, size_t length)
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
-append_to_string(Iterator source, Iterator source_end, 
+convert(Iterator source, Iterator source_end, 
                  SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags) 
 {
@@ -682,7 +682,7 @@ append_to_string(Iterator source, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -751,7 +751,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -814,7 +814,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) {
     conversion_result result = conversion_result::ok;
@@ -882,7 +882,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -938,7 +938,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -987,7 +987,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
         SequenceContainer& target, 
         Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -1038,7 +1038,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
@@ -1081,7 +1081,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
 template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
                                && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
-append_to_string(Iterator source_begin, Iterator source_end, 
+convert(Iterator source_begin, Iterator source_end, 
                  SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
