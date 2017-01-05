@@ -667,8 +667,15 @@ append_to_string(Iterator source, Iterator source_end,
             *source_stop = source;
             return result;
         }
-        target.append(source, (source) + length);
-        source += length;
+
+        size_t pos = target.size();
+        target.resize(target.size() + length);
+        switch (length) {
+            case 4: target[pos++] = static_cast<uint8_t>(*source++);
+            case 3: target[pos++] = static_cast<uint8_t>(*source++);
+            case 2: target[pos++] = static_cast<uint8_t>(*source++);
+            case 1: target[pos++] = static_cast<uint8_t>(*source++);
+        }
     }
     *source_stop = source;
     return result;
