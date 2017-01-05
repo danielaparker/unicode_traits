@@ -646,11 +646,11 @@ is_legal_utf8(Iterator source, size_t length)
     return conversion_result::ok;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
 convert(Iterator source, Iterator source_end, 
-                 SequenceContainer& target, Iterator* source_stop, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags) 
 {
     conversion_result result = conversion_result::ok;
@@ -679,11 +679,11 @@ convert(Iterator source, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, 
+                 Container& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -748,11 +748,11 @@ convert(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, 
+                 Container& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -811,11 +811,11 @@ convert(Iterator source_begin, Iterator source_end,
 
 // utf16
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, Iterator* source_stop, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) {
     conversion_result result = conversion_result::ok;
     Iterator source = source_begin;
@@ -866,7 +866,7 @@ convert(Iterator source_begin, Iterator source_end,
             ch = uni_replacement_char;
         }
         target.resize(target.size()+bytes_to_write);
-        typename SequenceContainer::value_type* target_ptr = &target[0] + target.length();
+        typename Container::value_type* target_ptr = &target[0] + target.length();
 
         switch (bytes_to_write) { /* note: everything falls through. */
             case 4: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
@@ -879,11 +879,11 @@ convert(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, Iterator* source_stop, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -935,11 +935,11 @@ convert(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, Iterator* source_stop, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -984,11 +984,11 @@ convert(Iterator source_begin, Iterator source_end,
 
 // utf32
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-        SequenceContainer& target, 
+        Container& target, 
         Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -1021,7 +1021,7 @@ convert(Iterator source_begin, Iterator source_end,
         }
 
         target.resize(target.size()+bytes_to_write);
-        typename SequenceContainer::value_type* target_ptr = &target[0] + target.length();
+        typename Container::value_type* target_ptr = &target[0] + target.length();
         switch (bytes_to_write) 
         { 
             /* note: everything falls through. */
@@ -1035,11 +1035,11 @@ convert(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint16_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, 
+                 Container& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -1078,11 +1078,11 @@ convert(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class SequenceContainer>
+template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint32_t),conversion_result>::type 
 convert(Iterator source_begin, Iterator source_end, 
-                 SequenceContainer& target, Iterator* source_stop, 
+                 Container& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
