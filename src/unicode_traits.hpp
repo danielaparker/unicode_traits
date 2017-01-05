@@ -646,11 +646,11 @@ is_legal_utf8(Iterator source, size_t length)
     return conversion_result::ok;
 }
 
-template <class Iterator,class UTF8,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                               && std::is_integral<UTF8>::value && sizeof(UTF8) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
 append_to_string(Iterator source, Iterator source_end, 
-                 std::basic_string<UTF8,STraits,SAllocator>& target, Iterator* source_stop, 
+                 SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags) 
 {
     conversion_result result = conversion_result::ok;
@@ -668,24 +668,22 @@ append_to_string(Iterator source, Iterator source_end,
             return result;
         }
 
-        size_t pos = target.size();
-        target.resize(target.size() + length);
         switch (length) {
-            case 4: target[pos++] = static_cast<uint8_t>(*source++);
-            case 3: target[pos++] = static_cast<uint8_t>(*source++);
-            case 2: target[pos++] = static_cast<uint8_t>(*source++);
-            case 1: target[pos++] = static_cast<uint8_t>(*source++);
+            case 4: target.push_back(static_cast<uint8_t>(*source++));
+            case 3: target.push_back(static_cast<uint8_t>(*source++));
+            case 2: target.push_back(static_cast<uint8_t>(*source++));
+            case 1: target.push_back(static_cast<uint8_t>(*source++));
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class Iterator,class UTF16,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                              && std::is_integral<UTF16>::value && sizeof(UTF16) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF16,STraits,SAllocator>& target, 
+                 SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -729,7 +727,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
                     target.push_back(uni_replacement_char);
                 }
             } else {
-                target.push_back((UTF16)ch); /* normal case */
+                target.push_back((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_utf16) {
             if (flags == conversion_flags ::strict) {
@@ -742,19 +740,19 @@ append_to_string(Iterator source_begin, Iterator source_end,
         } else {
             /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            target.push_back((UTF16)((ch >> half_shift) + uni_sur_high_start));
-            target.push_back((UTF16)((ch & half_mask) + uni_sur_low_start));
+            target.push_back((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            target.push_back((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class Iterator,class UTF32,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
-                               && std::is_integral<UTF32>::value && sizeof(UTF32) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF32,STraits,SAllocator>& target, 
+                 SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -813,11 +811,11 @@ append_to_string(Iterator source_begin, Iterator source_end,
 
 // utf16
 
-template <class Iterator,class UTF8,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<UTF8>::value && sizeof(UTF8) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF8,STraits,SAllocator>& target, Iterator* source_stop, 
+                 SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) {
     conversion_result result = conversion_result::ok;
     Iterator source = source_begin;
@@ -868,7 +866,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
             ch = uni_replacement_char;
         }
         target.resize(target.size()+bytes_to_write);
-        UTF8* target_ptr = &target[0] + target.length();
+        typename SequenceContainer::value_type* target_ptr = &target[0] + target.length();
 
         switch (bytes_to_write) { /* note: everything falls through. */
             case 4: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
@@ -881,11 +879,11 @@ append_to_string(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class UTF16,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<UTF16>::value && sizeof(UTF16) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF16,STraits,SAllocator>& target, Iterator* source_stop, 
+                 SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -937,11 +935,11 @@ append_to_string(Iterator source_begin, Iterator source_end,
     return result;
 }
 
-template <class Iterator,class UTF32,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t)
-                               && std::is_integral<UTF32>::value && sizeof(UTF32) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF32,STraits,SAllocator>& target, Iterator* source_stop, 
+                 SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -986,11 +984,11 @@ append_to_string(Iterator source_begin, Iterator source_end,
 
 // utf32
 
-template <class Iterator,class UTF8,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<UTF8>::value && sizeof(UTF8) == sizeof(uint8_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint8_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-        std::basic_string<UTF8,STraits,SAllocator>& target, 
+        SequenceContainer& target, 
         Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -1023,25 +1021,25 @@ append_to_string(Iterator source_begin, Iterator source_end,
         }
 
         target.resize(target.size()+bytes_to_write);
-        UTF8* target_ptr = &target[0] + target.length();
+        typename SequenceContainer::value_type* target_ptr = &target[0] + target.length();
         switch (bytes_to_write) 
         { 
             /* note: everything falls through. */
-            case 4: *--target_ptr = (UTF8)((ch | byteMark) & byteMask); ch >>= 6;
-            case 3: *--target_ptr = (UTF8)((ch | byteMark) & byteMask); ch >>= 6;
-            case 2: *--target_ptr = (UTF8)((ch | byteMark) & byteMask); ch >>= 6;
-            case 1: *--target_ptr = (UTF8) (ch | first_byte_mark[bytes_to_write]);
+            case 4: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 3: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 2: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 1: *--target_ptr = (uint8_t) (ch | first_byte_mark[bytes_to_write]);
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class Iterator,class UTF16,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<UTF16>::value && sizeof(UTF16) == sizeof(uint16_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint16_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF16,STraits,SAllocator>& target, 
+                 SequenceContainer& target, 
                  Iterator* source_stop, conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
@@ -1061,7 +1059,7 @@ append_to_string(Iterator source_begin, Iterator source_end,
                     target.push_back(uni_replacement_char);
                 }
             } else {
-                target.push_back((UTF16)ch); /* normal case */
+                target.push_back((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_legal_utf32) {
             if (flags == conversion_flags ::strict) {
@@ -1072,19 +1070,19 @@ append_to_string(Iterator source_begin, Iterator source_end,
         } else {
             /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            target.push_back((UTF16)((ch >> half_shift) + uni_sur_high_start));
-            target.push_back((UTF16)((ch & half_mask) + uni_sur_low_start));
+            target.push_back((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            target.push_back((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     *source_stop = source;
     return result;
 }
 
-template <class Iterator,class UTF32,class STraits,class SAllocator>
+template <class Iterator,class SequenceContainer>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t)
-                               && std::is_integral<UTF32>::value && sizeof(UTF32) == sizeof(uint32_t),conversion_result>::type 
+                               && std::is_integral<typename SequenceContainer::value_type>::value && sizeof(typename SequenceContainer::value_type) == sizeof(uint32_t),conversion_result>::type 
 append_to_string(Iterator source_begin, Iterator source_end, 
-                 std::basic_string<UTF32,STraits,SAllocator>& target, Iterator* source_stop, 
+                 SequenceContainer& target, Iterator* source_stop, 
                  conversion_flags  flags = conversion_flags ::strict) 
 {
     conversion_result result = conversion_result::ok;
