@@ -18,6 +18,7 @@
 
 #include <string>
 #include <iterator>
+#include <type_traits>
 
 namespace unicons {
 
@@ -646,6 +647,50 @@ is_legal_utf8(Iterator source, size_t length)
     return conversion_result::ok;
 }
 
+template <class...> using void_t = void;
+
+template <class, class, class = void>
+struct is_output_iterator : std::false_type {};
+
+template <class I, class E>
+struct is_output_iterator<I, E, void_t<
+    typename std::iterator_traits<I>::iterator_category,
+    decltype(*std::declval<I>() = std::declval<E>())>> : std::true_type {};
+
+template<class OutputIt, class CharT, class Enable = void>
+struct is_container_type_iterator : std::false_type {};
+
+template<class OutputIt, class CharT>
+struct is_container_type_iterator<OutputIt,CharT,
+    typename std::enable_if<(std::is_integral<typename OutputIt::container_type::value_type>::value 
+                             && sizeof(typename OutputIt::container_type::value_type) == sizeof(CharT))>::type
+> : std::true_type {};
+
+template<class OutputIt, class CharT, class Enable = void>
+struct is_compatible_output_iterator : std::false_type {};
+
+template<class OutputIt, class CharT>
+struct is_compatible_output_iterator<OutputIt,CharT,
+    typename std::enable_if<(is_output_iterator<OutputIt,CharT>::value
+                             && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
+                             && std::is_integral<typename OutputIt::container_type::value_type>::value 
+                             && sizeof(typename OutputIt::container_type::value_type) == sizeof(CharT))>::type
+> : std::true_type {};
+
+template<class OutputIt, class CharT>
+struct is_compatible_output_iterator<OutputIt,CharT,
+    typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
+                            && std::is_integral<typename std::iterator_traits<OutputIt>::value_type>::value 
+                            && sizeof(typename std::iterator_traits<OutputIt>::value_type) == sizeof(CharT)>::type
+> : std::true_type {};
+
+template<class OutputIt, class CharT>
+struct is_compatible_output_iterator<OutputIt,CharT,
+    typename std::enable_if<(is_output_iterator<OutputIt,CharT>::value
+                             && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
+                             && sizeof(typename OutputIt::char_type) == sizeof(CharT))>::type
+> : std::true_type {};
+
 template <class Iterator,class Container>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t)
                                && std::is_integral<typename Container::value_type>::value && sizeof(typename Container::value_type) == sizeof(uint8_t),conversion_result>::type 
@@ -865,14 +910,38 @@ convert(Iterator source_begin, Iterator source_end,
             bytes_to_write = 3;
             ch = uni_replacement_char;
         }
-        target.resize(target.size()+bytes_to_write);
-        typename Container::value_type* target_ptr = &target[0] + target.length();
+        
+        uint8_t byte1 = 0;
+        uint8_t byte2 = 0;
+        uint8_t byte3 = 0;
+        uint8_t byte4 = 0;
 
-        switch (bytes_to_write) { /* note: everything falls through. */
-            case 4: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 3: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 2: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 1: *--target_ptr = (uint8_t)(ch | first_byte_mark[bytes_to_write]);
+        switch (bytes_to_write) { // note: everything falls through
+            case 4: byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 3: byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 2: byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            case 1: byte1 = (uint8_t)(ch | first_byte_mark[bytes_to_write]);
+        }
+        switch (bytes_to_write) 
+        {
+        case 4: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            target.push_back(byte4);
+            break;
+        case 3: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            break;
+        case 2: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            break;
+        case 1: 
+            target.push_back(byte1);
+            break;
         }
     }
     *source_stop = source;
@@ -1020,15 +1089,38 @@ convert(Iterator source_begin, Iterator source_end,
             result = conversion_result::source_illegal;
         }
 
-        target.resize(target.size()+bytes_to_write);
-        typename Container::value_type* target_ptr = &target[0] + target.length();
+        uint8_t byte1 = 0;
+        uint8_t byte2 = 0;
+        uint8_t byte3 = 0;
+        uint8_t byte4 = 0;
+
+        switch (bytes_to_write) { // note: everything falls through
+        case 4: byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+        case 3: byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+        case 2: byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+        case 1: byte1 = (uint8_t) (ch | first_byte_mark[bytes_to_write]);
+        }
+
         switch (bytes_to_write) 
-        { 
-            /* note: everything falls through. */
-            case 4: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 3: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 2: *--target_ptr = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 1: *--target_ptr = (uint8_t) (ch | first_byte_mark[bytes_to_write]);
+        {
+        case 4: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            target.push_back(byte4);
+            break;
+        case 3: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            target.push_back(byte3);
+            break;
+        case 2: 
+            target.push_back(byte1);
+            target.push_back(byte2);
+            break;
+        case 1: 
+            target.push_back(byte1);
+            break;
         }
     }
     *source_stop = source;
