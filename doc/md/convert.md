@@ -15,6 +15,6 @@ Converts the characters in the range, defined by [first, last), to another range
 ### Parameters
 
 ------------------------------------|------------------------------
-```first, last``` | - the range of characters to copy
-
+```first, last``` | - the range of characters to copy.
+```d_first```     | - the beginning of the destination range.
 
