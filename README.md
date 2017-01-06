@@ -12,15 +12,21 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 std::string source = "Hello world \xf0\x9f\x99\x82";  
 
 // Convert source to UTF16
-std::u16string target16;
+std::u16string u16target;
 auto result = convert(source.begin(),source.end(),
-                      std::back_inserter(target16), 
+                      std::back_inserter(u16target), 
                       conv_flags::strict);
 
 // Convert source to UTF32
-std::vector<uint32_t> target32;
+std::vector<uint32_t> u32target;
 auto result = convert(source.begin(),source.end(),
-                      std::back_inserter(target32), 
+                      std::back_inserter(u32target), 
+                      conv_flags::strict);
+
+// Convert source to UTF16 (16 bit wchar_t) or UTF32 (32 bit wchar_t)
+wstring wtarget;
+auto result = convert(source.begin(),source.end(),
+                      std::back_inserter(wtarget), 
                       conv_flags::strict);
 ```
 Hello World &#128578;
