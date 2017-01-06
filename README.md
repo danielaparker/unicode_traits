@@ -32,7 +32,7 @@ int main()
                                    std::back_inserter(u32target), 
                                    unicons::conv_flags::strict);
 
-    // Convert source to UTF16 (16 bit wchar_t) or UTF32 (32 bit wchar_t)
+    // Convert source to UTF16 (if 16 bit wchar_t) or UTF32 (if 32 bit wchar_t)
     wstring wtarget;
     auto result = unicons::convert(source.begin(),source.end(),
                                    std::back_inserter(wtarget), 
