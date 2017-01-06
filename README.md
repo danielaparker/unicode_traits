@@ -10,6 +10,9 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 
 ```c++
 #include "unicode_traits.hpp"
+#include <vector>
+#include <string>
+#include <iterator>
 
 int main()
 {
