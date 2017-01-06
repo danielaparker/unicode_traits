@@ -128,7 +128,11 @@ TEST_CASE("utf8 tests")
     std::string source = "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
                          "\xc2\x80"
                          "\xc3\xbf"
-                         "\xcf\xbf";
+                         "\xcf\xbf"
+                         "\xdb\xbf"         // U+06FF
+                         "\xe0\xa7\xbf"     // U+09FF
+                         "\xf0\x9f\xad\xbf" // U+1FB7F
+                         ;
 
     SECTION("append to utf8 string")
     {
@@ -145,7 +149,10 @@ TEST_CASE("utf8 tests")
         std::u16string expected = u"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
                                   u"\x80"
                                   u"\xff"
-                                  u"\x03ff";
+                                  u"\x03ff"
+                                  u"\x06ff"
+                                  u"\x09FF" // U+09FF
+                                  u"\xD83E\xDF7F";
 
         std::u16string target;
         auto result = convert(source.begin(),source.end(),
@@ -161,7 +168,11 @@ TEST_CASE("utf8 tests")
         std::u32string expected = U"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
                                   U"\x80"
                                   U"\xff"
-                                  U"\x03ff";
+                                  U"\x03ff"
+                                  U"\x06ff"
+                                  U"\x09ff"
+                                  U"\x1FB7F"
+                                  ;
 
         std::u32string target;
         auto result = convert(source.begin(),source.end(),
