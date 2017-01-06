@@ -262,7 +262,7 @@ struct unicode_traits<CharT,
     static typename std::enable_if<std::is_integral<UTF32>::value && sizeof(UTF32) == sizeof(uint32_t),uni_errc >::type 
     next_codepoint(const CharT* source_begin, const CharT* source_end, 
                    UTF32* target, const CharT** source_stop,
-                   conv_flags  flags = conv_flags::strict) 
+                   conv_flags flags = conv_flags::strict) 
     {
         uni_errc  result = uni_errc::ok;
 
@@ -435,7 +435,7 @@ struct unicode_traits<CharT,
     static typename std::enable_if<std::is_integral<UTF32>::value && sizeof(UTF32) == sizeof(uint32_t),uni_errc >::type 
     next_codepoint(const CharT* source_begin, const CharT* source_end, 
                    UTF32* target, const CharT** source_stop,
-                   conv_flags  flags = conv_flags::strict) 
+                   conv_flags flags = conv_flags::strict) 
     {
         uni_errc  result = uni_errc::ok;
         const CharT* source = source_begin;
@@ -675,8 +675,10 @@ struct is_compatible_output_iterator<OutputIt,CharT,
 template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
-convert(InputIt first, InputIt last, OutputIt target, conv_flags) 
+convert(InputIt first, InputIt last, OutputIt target, conv_flags flags=conv_flags::strict) 
 {
+    (void)flags;
+
     uni_errc  result = uni_errc::ok;
     while (first != last) 
     {
@@ -772,7 +774,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -833,7 +835,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) {
+                 conv_flags flags = conv_flags::strict) {
     uni_errc  result = uni_errc::ok;
     while (first < last) {
         unsigned short bytes_to_write = 0;
@@ -923,7 +925,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -977,7 +979,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -1024,7 +1026,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
         OutputIt target, 
-        conv_flags  flags = conv_flags::strict) 
+        conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
     while (first < last) {
@@ -1096,7 +1098,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -1137,7 +1139,7 @@ static typename std::enable_if<std::is_integral<typename std::iterator_traits<In
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -1196,7 +1198,7 @@ template <class InputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                ,std::pair<uni_errc,InputIt>>::type 
 validate(InputIt first, InputIt last, 
-                 conv_flags  flags = conv_flags::strict) 
+                 conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
@@ -1243,7 +1245,7 @@ template <class InputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                ,std::pair<uni_errc,InputIt>>::type 
 validate(InputIt first, InputIt last, 
-         conv_flags  flags = conv_flags::strict) 
+         conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
 
