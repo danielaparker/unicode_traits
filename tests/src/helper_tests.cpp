@@ -9,7 +9,7 @@
 #include <string>
 #include <iterator>
 #include <type_traits>
-
+ 
 using namespace unicons;
 
 TEST_CASE("is_compatible_output_iterator") 

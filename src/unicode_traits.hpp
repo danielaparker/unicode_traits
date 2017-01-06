@@ -718,8 +718,8 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-        OutputIt& d_first, 
-        conv_flags  flags = conv_flags::strict) 
+        OutputIt d_first, 
+        conv_flags flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
 
@@ -786,7 +786,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
@@ -848,7 +848,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) {
     conv_result  result = conv_result::ok;
     InputIt first = source_begin;
@@ -939,7 +939,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
@@ -994,7 +994,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
@@ -1042,7 +1042,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-        OutputIt& d_first, 
+        OutputIt d_first, 
         conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
@@ -1115,7 +1115,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;
@@ -1157,7 +1157,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<conv_result,InputIt>>::type 
 convert(InputIt source_begin, InputIt last, 
-                 OutputIt& d_first, 
+                 OutputIt d_first, 
                  conv_flags  flags = conv_flags::strict) 
 {
     conv_result  result = conv_result::ok;

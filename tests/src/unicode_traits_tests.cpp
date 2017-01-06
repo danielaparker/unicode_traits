@@ -5,4 +5,9 @@
 #include <catch.hpp>
 #include <unicode_traits.hpp>
 
+#include <iostream>
+
+TEST_CASE("scratchpad") 
+{
+}
 
