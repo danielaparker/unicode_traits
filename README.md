@@ -9,25 +9,30 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 ### Convert UTF8 to UTF16 and UTF32
 
 ```c++
-std::string source = "Hello world \xf0\x9f\x99\x82";  
+#include "unicode_traits.hpp"
 
-// Convert source to UTF16
-std::u16string u16target;
-auto result = convert(source.begin(),source.end(),
-                      std::back_inserter(u16target), 
-                      conv_flags::strict);
+int main()
+{
+    std::string source = "Hello world \xf0\x9f\x99\x82";  
 
-// Convert source to UTF32
-std::vector<uint32_t> u32target;
-auto result = convert(source.begin(),source.end(),
-                      std::back_inserter(u32target), 
-                      conv_flags::strict);
+    // Convert source to UTF16
+    std::u16string u16target;
+    auto result = unicons::convert(source.begin(),source.end(),
+                                   std::back_inserter(u16target), 
+                                   unicons::conv_flags::strict);
 
-// Convert source to UTF16 (16 bit wchar_t) or UTF32 (32 bit wchar_t)
-wstring wtarget;
-auto result = convert(source.begin(),source.end(),
-                      std::back_inserter(wtarget), 
-                      conv_flags::strict);
+    // Convert source to UTF32
+    std::vector<uint32_t> u32target;
+    auto result = unicons::convert(source.begin(),source.end(),
+                                   std::back_inserter(u32target), 
+                                   unicons::conv_flags::strict);
+
+    // Convert source to UTF16 (16 bit wchar_t) or UTF32 (32 bit wchar_t)
+    wstring wtarget;
+    auto result = unicons::convert(source.begin(),source.end(),
+                                   std::back_inserter(wtarget), 
+                                   unicons::conv_flags::strict);
+}
 ```
 Hello World &#128578;
 
