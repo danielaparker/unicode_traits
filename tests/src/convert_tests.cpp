@@ -12,8 +12,7 @@ using namespace unicons;
 
 TEST_CASE("utf8") 
 {
-    std::string source = "Hello world \xf0\x9f\x99\x82" // U+1F642
-                         ;
+    std::string source = "Hello world \xf0\x9f\x99\x82"; // U+1F642
 
     SECTION("append to utf8 string")
     {

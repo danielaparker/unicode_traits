@@ -9,7 +9,7 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 ### Convert UTF8 to UTF16 and UTF32
 
 ```c++
-std::string source = "Hello world \xf0\x9f\x99\x82"; // 
+std::string source = "Hello world \xf0\x9f\x99\x82";  
 
 // Convert source to UTF16
 std::u16string target16;
