@@ -16,6 +16,24 @@
 #ifndef UNICONS_UNICODE_TRAITS_HPP
 #define UNICONS_UNICODE_TRAITS_HPP
 
+#if defined (__clang__)
+#if defined(_GLIBCXX_USE_NOEXCEPT)
+#define UNICONS_NOEXCEPT _GLIBCXX_USE_NOEXCEPT
+#else
+#define UNICONS_NOEXCEPT noexcept
+#endif
+#elif defined(__GNUC__)
+#define UNICONS_NOEXCEPT _GLIBCXX_USE_NOEXCEPT
+#elif defined(_MSC_VER)
+#if _MSC_VER >= 1900
+#define UNICONS_NOEXCEPT noexcept
+#else
+#define UNICONS_NOEXCEPT
+#endif
+#else
+#define UNICONS_NOEXCEPT
+#endif
+
 #include <string>
 #include <iterator>
 #include <type_traits>
@@ -97,7 +115,7 @@ class Unicode_traits_error_category_impl_
    : public std::error_category
 {
 public:
-    virtual const char* name() const noexcept
+    virtual const char* name() const UNICONS_NOEXCEPT
     {
         return "unicode_traits";
     }
