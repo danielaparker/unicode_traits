@@ -657,7 +657,7 @@ struct is_compatible_output_iterator<OutputIt,CharT,
 template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
-convert(InputIt first, InputIt last, OutputIt d_first, conv_flags) 
+convert(InputIt first, InputIt last, OutputIt target, conv_flags) 
 {
     uni_errc  result = uni_errc::ok;
     while (first != last) 
@@ -673,10 +673,10 @@ convert(InputIt first, InputIt last, OutputIt d_first, conv_flags)
         }
 
         switch (length) {
-            case 4: *d_first++ = (static_cast<uint8_t>(*first++));
-            case 3: *d_first++ = (static_cast<uint8_t>(*first++));
-            case 2: *d_first++ = (static_cast<uint8_t>(*first++));
-            case 1: *d_first++ = (static_cast<uint8_t>(*first++));
+            case 4: *target++ = (static_cast<uint8_t>(*first++));
+            case 3: *target++ = (static_cast<uint8_t>(*first++));
+            case 2: *target++ = (static_cast<uint8_t>(*first++));
+            case 1: *target++ = (static_cast<uint8_t>(*first++));
         }
     }
     return std::make_pair(result,first);
@@ -686,7 +686,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-        OutputIt d_first, 
+        OutputIt target, 
         conv_flags flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -726,10 +726,10 @@ convert(InputIt first, InputIt last,
                     result = uni_errc::source_illegal;
                     break;
                 } else {
-                    *d_first++ = (uni_replacement_char);
+                    *target++ = (uni_replacement_char);
                 }
             } else {
-                *d_first++ = ((uint16_t)ch); /* normal case */
+                *target++ = ((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_utf16) {
             if (flags == conv_flags::strict) {
@@ -737,13 +737,13 @@ convert(InputIt first, InputIt last,
                 first -= (extra_bytes_to_read+1); /* return to the start */
                 break; /* Bail out; shouldn't continue */
             } else {
-                *d_first++ = (uni_replacement_char);
+                *target++ = (uni_replacement_char);
             }
         } else {
-            /* d_first is a character in range 0xFFFF - 0x10FFFF. */
+            /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            *d_first++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
-            *d_first++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
+            *target++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            *target++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     return std::make_pair(result,first);
@@ -753,7 +753,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -795,14 +795,14 @@ convert(InputIt first, InputIt last,
                     result = uni_errc::source_illegal;
                     break;
                 } else {
-                    *d_first++ = (uni_replacement_char);
+                    *target++ = (uni_replacement_char);
                 }
             } else {
-                *d_first++ = (ch);
+                *target++ = (ch);
             }
         } else { /* i.e., ch > uni_max_legal_utf32 */
             result = uni_errc::source_illegal;
-            *d_first++ = (uni_replacement_char);
+            *target++ = (uni_replacement_char);
         }
     }
     return std::make_pair(result,first);
@@ -814,7 +814,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) {
     uni_errc  result = uni_errc::ok;
     while (first < last) {
@@ -878,22 +878,22 @@ convert(InputIt first, InputIt last,
         switch (bytes_to_write) 
         {
         case 4: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
-            *d_first++ = (byte3);
-            *d_first++ = (byte4);
+            *target++ = (byte1);
+            *target++ = (byte2);
+            *target++ = (byte3);
+            *target++ = (byte4);
             break;
         case 3: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
-            *d_first++ = (byte3);
+            *target++ = (byte1);
+            *target++ = (byte2);
+            *target++ = (byte3);
             break;
         case 2: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
+            *target++ = (byte1);
+            *target++ = (byte2);
             break;
         case 1: 
-            *d_first++ = (byte1);
+            *target++ = (byte1);
             break;
         }
     }
@@ -904,7 +904,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -920,8 +920,8 @@ convert(InputIt first, InputIt last,
                 uint32_t ch2 = *first;
                 /* If it's a low surrogate, */
                 if (ch2 >= uni_sur_low_start && ch2 <= uni_sur_low_end) {
-                    *d_first++ = ((uint16_t)ch);
-                    *d_first++ = ((uint16_t)ch2);
+                    *target++ = ((uint16_t)ch);
+                    *target++ = ((uint16_t)ch2);
                     ++first;
                 } else if (flags == conv_flags::strict) { /* it's an unpaired high surrogate */
                     --first; /* return to the illegal value itself */
@@ -943,12 +943,12 @@ convert(InputIt first, InputIt last,
             }
             else
             {
-                *d_first++ = ((uint16_t)ch);
+                *target++ = ((uint16_t)ch);
             }
         }
         else
         {
-            *d_first++ = ((uint16_t)ch);
+            *target++ = ((uint16_t)ch);
         }
     }
     return std::make_pair(result,first);
@@ -958,7 +958,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -994,7 +994,7 @@ convert(InputIt first, InputIt last,
                 break;
             }
         }
-        *d_first++ = (ch);
+        *target++ = (ch);
     }
     return std::make_pair(result,first);
 }
@@ -1005,7 +1005,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-        OutputIt d_first, 
+        OutputIt target, 
         conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -1051,22 +1051,22 @@ convert(InputIt first, InputIt last,
         switch (bytes_to_write) 
         {
         case 4: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
-            *d_first++ = (byte3);
-            *d_first++ = (byte4);
+            *target++ = (byte1);
+            *target++ = (byte2);
+            *target++ = (byte3);
+            *target++ = (byte4);
             break;
         case 3: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
-            *d_first++ = (byte3);
+            *target++ = (byte1);
+            *target++ = (byte2);
+            *target++ = (byte3);
             break;
         case 2: 
-            *d_first++ = (byte1);
-            *d_first++ = (byte2);
+            *target++ = (byte1);
+            *target++ = (byte2);
             break;
         case 1: 
-            *d_first++ = (byte1);
+            *target++ = (byte1);
             break;
         }
     }
@@ -1077,7 +1077,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint16_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -1093,22 +1093,22 @@ convert(InputIt first, InputIt last,
                     result = uni_errc::source_illegal;
                     break;
                 } else {
-                    *d_first++ = (uni_replacement_char);
+                    *target++ = (uni_replacement_char);
                 }
             } else {
-                *d_first++ = ((uint16_t)ch); /* normal case */
+                *target++ = ((uint16_t)ch); /* normal case */
             }
         } else if (ch > uni_max_legal_utf32) {
             if (flags == conv_flags::strict) {
                 result = uni_errc::source_illegal;
             } else {
-                *d_first++ = (uni_replacement_char);
+                *target++ = (uni_replacement_char);
             }
         } else {
-            /* d_first is a character in range 0xFFFF - 0x10FFFF. */
+            /* target is a character in range 0xFFFF - 0x10FFFF. */
             ch -= half_base;
-            *d_first++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
-            *d_first++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
+            *target++ = ((uint16_t)((ch >> half_shift) + uni_sur_high_start));
+            *target++ = ((uint16_t)((ch & half_mask) + uni_sur_low_start));
         }
     }
     return std::make_pair(result,first);
@@ -1118,7 +1118,7 @@ template <class InputIt,class OutputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
                                && is_compatible_output_iterator<OutputIt,uint32_t>::value,std::pair<uni_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, 
-                 OutputIt d_first, 
+                 OutputIt target, 
                  conv_flags  flags = conv_flags::strict) 
 {
     uni_errc  result = uni_errc::ok;
@@ -1136,11 +1136,11 @@ convert(InputIt first, InputIt last,
         }
         if (ch <= uni_max_legal_utf32)
         {
-            *d_first++ = (ch);
+            *target++ = (ch);
         }
         else
         {
-            *d_first++ = (uni_replacement_char);
+            *target++ = (uni_replacement_char);
             result = uni_errc::source_illegal;
         }
     }
