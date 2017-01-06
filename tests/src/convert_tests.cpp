@@ -12,7 +12,8 @@ using namespace unicons;
 
 TEST_CASE("utf8") 
 {
-    std::string source = "Hello world";
+    std::string source = "Hello world \xf0\x9f\x99\x82" // U+1F642
+                         ;
 
     SECTION("append to utf8 string")
     {
@@ -32,7 +33,7 @@ TEST_CASE("utf8")
                               conv_flags::strict);
         REQUIRE(result.first == conv_result::ok);
         CHECK(result.second == source.end());
-        CHECK(u"Hello world" == target);
+        CHECK(u"Hello world \xD83D\xDE42" == target);
     }
 
     SECTION("append to utf32 string")
@@ -43,7 +44,7 @@ TEST_CASE("utf8")
                               conv_flags::strict);
         REQUIRE(result.first == conv_result::ok);
         CHECK(result.second == source.end());
-        CHECK(U"Hello world" == target);
+        CHECK(U"Hello world \x1F642" == target);
     }
 }
 

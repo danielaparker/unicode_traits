@@ -6,6 +6,22 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 
 ## Examples
 
+### Convert UTF8 to UTF16
+```c++
+std::string source = "Hello world \xf0\x9f\x99\x82"; // &#128578;
+
+std::u16string target;
+auto result = convert(source.begin(),source.end(),
+                      std::back_insert_iterator<std::u16string>(target), 
+                      conv_flags::strict);
+```
+
+## Resources
+
+- [The Unicode Consortium](http://unicode.org/)
+- [UTF-8 encoding table and Unicode characters](http://www.utf8-chartable.de/unicode-utf8-table.pl)
+- [Unicode code converter](https://r12a.github.io/apps/conversion/)
+
 
 
 
