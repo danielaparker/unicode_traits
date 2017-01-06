@@ -6,16 +6,24 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 
 ## Examples
 
-### Convert UTF8 to UTF16
+### Convert UTF8 to UTF16 and UTF32
+
 ```c++
 std::string source = "Hello world \xf0\x9f\x99\x82"; // 
 
-std::u16string target;
+// Convert source to UTF16
+std::u16string target16;
 auto result = convert(source.begin(),source.end(),
-                      std::back_insert_iterator<std::u16string>(target), 
+                      std::back_inserter(target16), 
+                      conv_flags::strict);
+
+// Convert source to UTF32
+std::vector<uint32_t> target32;
+auto result = convert(source.begin(),source.end(),
+                      std::back_inserter(target32), 
                       conv_flags::strict);
 ```
-&#128578;
+Hello World &#128578;
 
 ## Resources
 
