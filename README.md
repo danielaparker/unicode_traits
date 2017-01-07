@@ -41,6 +41,37 @@ int main()
 ```
 Hello World &#128578;
 
+### Validate UTF-8 sequence
+
+```c++
+std::string source = "\xE6\x97\xA5\xD1\x88\xFA";
+auto result = unicons::validate(source.begin(),source.end(),conv_flags::strict);
+
+if (result.first != unicons::uni_errc::ok)
+{
+    std::cout << make_error_code(result.first).message() << std::endl;
+}
+```
+Output:
+```
+Partial character in source, but hit end
+```
+
+### Validate UTF-16 sequence
+```c++
+std::u16string source = u"\xD888\x1234";
+auto result = validate(source.begin(),source.end(),conv_flags::strict);
+
+if (result.first != unicons::uni_errc::ok)
+{
+    std::cout << make_error_code(result.first).message() << std::endl;
+}
+```
+Output:
+```
+Unpaired high surrogate UTF-16
+```
+
 ## Resources
 
 - [The Unicode Consortium](http://unicode.org/)
