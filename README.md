@@ -21,23 +21,43 @@ int main()
     std::string source = "Hello world \xf0\x9f\x99\x82";  
 
     // Convert source to UTF16
-    std::u16string u16target;
-    auto result = unicons::convert(source.begin(),source.end(),
-                                   std::back_inserter(u16target), 
-                                   unicons::conv_flags::strict);
+    std::u16string target1;
+    auto result1 = unicons::convert(source.begin(),source.end(),
+                                    std::back_inserter(target1), 
+                                    unicons::conv_flags::strict);
 
     // Convert source to UTF32
-    std::vector<uint32_t> u32target;
-    auto result = unicons::convert(source.begin(),source.end(),
-                                   std::back_inserter(u32target), 
-                                   unicons::conv_flags::strict);
+    std::vector<uint32_t> target2;
+    auto result2 = unicons::convert(source.begin(),source.end(),
+                                    std::back_inserter(target2), 
+                                    unicons::conv_flags::strict);
 
     // Convert source to UTF16 (if 16 bit wchar_t) or UTF32 (if 32 bit wchar_t)
-    wstring wtarget;
-    auto result = unicons::convert(source.begin(),source.end(),
-                                   std::back_inserter(wtarget), 
-                                   unicons::conv_flags::strict);
+    wstring target3;
+    auto result3 = unicons::convert(source.begin(),source.end(),
+                                    std::back_inserter(target3), 
+                                    unicons::conv_flags::strict);
 }
+```
+Hello World &#128578;
+
+### Append codepoint to string
+```c++
+uint32_t cp = 0x1f642;
+
+std::string target1 = "Hello world ";
+std::u16string target2 = u"Hello world ";
+std::u32string target3 = U"Hello world ";
+std::wstring target4 = L"Hello world ";
+
+auto result1 = unicons::convert(&cp,&cp + 1,std::back_inserter(target1), 
+                                unicons::conv_flags::strict);
+auto result2 = unicons::convert(&cp,&cp + 1,std::back_inserter(target2), 
+                                unicons::conv_flags::strict);
+auto result3 = unicons::convert(&cp,&cp + 1,std::back_inserter(target3), 
+                                unicons::conv_flags::strict);
+auto result4 = unicons::convert(&cp,&cp + 1,std::back_inserter(target4), 
+                                unicons::conv_flags::strict);
 ```
 Hello World &#128578;
 
@@ -60,7 +80,7 @@ Partial character in source, but hit end
 ### Validate UTF-16 sequence
 ```c++
 std::u16string source = u"\xD888\x1234";
-auto result = validate(source.begin(),source.end(),conv_flags::strict);
+auto result = unicons::validate(source.begin(),source.end(),conv_flags::strict);
 
 if (result.first != unicons::uni_errc::ok)
 {

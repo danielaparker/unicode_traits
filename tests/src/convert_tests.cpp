@@ -343,6 +343,52 @@ TEST_CASE("utf32 to utf8")
         CHECK(result.second == source.end());
         CHECK(expected == target);
     }
-
 }
 
+TEST_CASE("append codepoint to string") 
+{
+    uint32_t cp = 0x1f642;
+
+    SECTION("string")
+    {
+        std::string target;
+        std::string expected = "\xf0\x9f\x99\x82";
+
+        auto result = convert(&cp,&cp + 1,
+                              std::back_inserter(target),
+                              conv_flags::strict);
+        REQUIRE(result.first == uni_errc::ok);
+        CHECK(result.second == &cp + 1);
+        CHECK(expected == target);
+    }
+
+    SECTION("u16string")
+    {
+        std::u16string target;
+        std::u16string expected = u"\xD83D\xDE42";
+
+        auto result = convert(&cp,&cp + 1,
+                              std::back_inserter(target),
+                              conv_flags::strict);
+        REQUIRE(result.first == uni_errc::ok);
+        CHECK(result.second == &cp + 1);
+        CHECK(expected == target);
+    }
+
+    SECTION("u32string")
+    {
+        std::u32string target;
+        std::u32string expected = U"\x1F642";
+
+        auto result = convert(&cp,&cp + 1,
+                              std::back_inserter(target),
+                              conv_flags::strict);
+        REQUIRE(result.first == uni_errc::ok);
+        CHECK(result.second == &cp + 1);
+        CHECK(expected == target);
+    }
+}
+
+TEST_CASE("surrogate pair") 
+{
+}
