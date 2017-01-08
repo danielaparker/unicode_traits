@@ -15,7 +15,7 @@ TEST_CASE("validate utf8")
     SECTION("invalid sequence") 
     {
         std::string source = "\xE6\x97\xA5\xD1\x88\xFA";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::source_exhausted);
     }
@@ -26,35 +26,35 @@ TEST_CASE("validate utf16")
     SECTION("high_surrogate") 
     {
         std::u16string source = u"\xD800";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::source_exhausted);
     }
     SECTION("1st surrogate but 2nd missing") 
     {
         std::u16string source = u"\xDADA";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::source_exhausted);
     }
     SECTION("1st valid surrogate but 2nd invalid") 
     {
         std::u16string source = u"\xD888\x1234";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::unpaired_high_surrogate);
     }
     SECTION("high surrogate then \x01") 
     {
         std::u16string source = u"\xD800\x01";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::unpaired_high_surrogate);
     }
     SECTION("hhigh_surrogate_then_1x") 
     {
         std::u16string source = u"\xD800\x1x";
-        auto result = validate(source.begin(),source.end(),conv_flags::strict);
+        auto result = validate(source.begin(),source.end());
         REQUIRE(result.first != uni_errc::ok);
         CHECK(result.first == uni_errc::unpaired_high_surrogate);
     }

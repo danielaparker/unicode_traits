@@ -6,7 +6,7 @@ using namespace unicons;
 void validate_example1()
 {
     std::string source = "\xE6\x97\xA5\xD1\x88\xFA";
-    auto result = unicons::validate(source.begin(),source.end(),conv_flags::strict);
+    auto result = unicons::validate(source.begin(),source.end());
 
     if (result.first != unicons::uni_errc::ok)
     {
@@ -17,7 +17,7 @@ void validate_example1()
 void validate_example2()
 {
     std::u16string source = u"\xD888\x1234";
-    auto result = validate(source.begin(),source.end(),conv_flags::strict);
+    auto result = validate(source.begin(),source.end());
 
     if (result.first != unicons::uni_errc::ok)
     {

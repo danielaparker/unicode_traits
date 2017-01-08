@@ -55,8 +55,8 @@ TEST_CASE( "utf16")
     {
         std::string target;
         auto result = convert(source.begin(),source.end(),
-                                       std::back_inserter(target),
-                                       conv_flags::strict);
+                              std::back_inserter(target),
+                              conv_flags::strict);
         REQUIRE(result.first == uni_errc::ok);
         CHECK(result.second == source.end());
         CHECK("Hello world" == target);
