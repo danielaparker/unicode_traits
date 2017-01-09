@@ -6,7 +6,7 @@ All you need to do is download one header file, [unicode_traits.hpp](https://raw
 
 Consult the [unicode_traits reference](https://github.com/danielaparker/unicode_traits/wiki) for details.
 
-It has been tested with MS VC++ 2013, MS VC++ 2015, GCC 4.8, GCC 4.9, GCC 6.2.0 and recent versions of clang.
+It should work with with MS VC++ 2013, MS VC++ 2015, GCC 4.8, GCC 4.9, GCC 6.2.0 and recent versions of clang.
 
 ## Examples
 
