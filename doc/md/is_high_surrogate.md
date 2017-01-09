@@ -1,5 +1,5 @@
 ```c++
-unicons::u8_length
+unicons::is_high_surrogate
 ```
 
 ### Header
@@ -11,10 +11,10 @@ unicons::u8_length
 ### Synopsis
 ```c++
 template <class InputIt>
-size_t u8_length(InputIt first, InputIt last) 
+bool is_high_surrogate(InputIt first, InputIt last) 
 ```
 
-Returns the number of UTF-8 characters required to represent the string.
+Checks if the character is a UTF-16 high surrogate code point in the range 0xd800 to 0xdbff inclusive.
 
 Parameter   |Description
 ------------|------------------------------
@@ -24,4 +24,4 @@ The source encoding scheme is assumed to be one-to-one with the character width,
 
 ### Return value
 
-The number of UTF-8 characters
+`true` if the character is a UTF-16 high surrogate code point, false otherwise.

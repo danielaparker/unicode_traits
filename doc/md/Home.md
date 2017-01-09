@@ -7,8 +7,10 @@ The `unicode_traits` classes and functions are in namespace `unicons`.
 ### Functions
 
 [convert](convert)  
-[validate](validate)  
-[u8_length](u8_length)  
+[is_high_surrogate](is_high_surrogate) 
+[is_low_surrogate](is_low_surrogate) 
+[is_surrogate](is_surrogate) 
+[sequence_at](sequence_at) 
 [u32_length](u32_length)  
-[sequence_at](sequence_at)  
-
+[u8_length](u8_length)  
+[validate](validate)  
