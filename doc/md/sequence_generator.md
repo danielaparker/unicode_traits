@@ -54,10 +54,10 @@ while (!g.done())
     uint32_t cp = g.get_codepoint();    
 }
 ```
-
+```
 H
 i
-
+```
 &#128578;
 
 
