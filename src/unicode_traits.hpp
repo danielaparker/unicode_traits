@@ -98,8 +98,6 @@ enum class conv_flags
     lenient
 };
 
-// unicode_traits
-
 enum class uni_errc 
 {
     ok = 0,                         // conversion successful
@@ -832,6 +830,8 @@ class sequence_generator
     size_t length_;
     uni_errc err_cd_;
 public:
+    typedef std::pair<Iterator,size_t> sequence_type;
+
     sequence_generator(Iterator first, Iterator last, 
                        conv_flags flags = conv_flags::strict)
         : begin_(first), last_(last), flags_(flags), 
@@ -850,14 +850,14 @@ public:
         return err_cd_;
     }
 
-    std::pair<Iterator,size_t> get() const 
+    sequence_type get() const 
     {
         return std::make_pair(begin_,length_);
     }
 
     template <class CharT = typename std::iterator_traits<Iterator>::value_type>
     typename std::enable_if<sizeof(CharT) == sizeof(uint8_t),uint32_t>::type 
-    get_codepoint()
+    get_codepoint() const
     {
         uint32_t ch = 0;
         Iterator it = begin_;
@@ -896,7 +896,7 @@ public:
 
     template <class CharT = typename std::iterator_traits<Iterator>::value_type>
     typename std::enable_if<sizeof(CharT) == sizeof(uint16_t),uint32_t>::type 
-    get_codepoint()
+    get_codepoint() const
     {
         if (length_ == 0)
         {
@@ -918,7 +918,7 @@ public:
 
     template <class CharT = typename std::iterator_traits<Iterator>::value_type>
     typename std::enable_if<sizeof(CharT) == sizeof(uint32_t),uint32_t>::type 
-    get_codepoint()
+    get_codepoint() const
     {
         if (length_ == 0)
         {
@@ -1008,8 +1008,9 @@ public:
 };
 
 template <class InputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) != sizeof(uint32_t)
-                               ,std::pair<InputIt,size_t>>::type 
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value 
+                               && (sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t) || sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)),
+                               std::pair<InputIt,size_t>>::type 
 sequence_at(InputIt first, InputIt last, size_t index) 
 {
     sequence_generator<InputIt> g(first, last, unicons::conv_flags::strict);
@@ -1024,12 +1025,121 @@ sequence_at(InputIt first, InputIt last, size_t index)
 }
 
 template <class InputIt>
-static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
-                               ,std::pair<InputIt,size_t>>::type 
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),
+                               std::pair<InputIt,size_t>>::type 
 sequence_at(InputIt first, InputIt last, size_t index) 
 {
     size_t size = std::distance(first,last);
     return index < size ? *(first+size) : std::pair<InputIt,size_t>(last,0);
+}
+
+// u8_length
+
+template <class InputIt>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t),size_t>::type 
+u8_length(InputIt first, InputIt last) 
+{
+    return std::distance(first,last);
+}
+
+// utf16
+
+template <class InputIt>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t),size_t>::type 
+u8_length(InputIt first, InputIt last) 
+{
+    conv_flags flags = conv_flags::strict;
+    size_t count = 0;
+    for (InputIt p = first; p != last; ++p)
+    {
+        uint32_t ch = *p;
+        if (ch >= uni_sur_high_start && ch <= uni_sur_high_end) {
+            /* If the 16 bits following the high surrogate are in the p buffer... */
+            if (p < last) {
+                uint32_t ch2 = *(++p);
+                /* If it's a low surrogate, convert to uint32_t. */
+                if (ch2 >= uni_sur_low_start && ch2 <= uni_sur_low_end) {
+                    ch = ((ch - uni_sur_high_start) << half_shift)
+                        + (ch2 - uni_sur_low_start) + half_base;
+               
+                } else if (flags == conv_flags::strict) { /* it's an unpaired high surrogate */
+                    break;
+                }
+            } else { /* We don't have the 16 bits following the high surrogate. */
+                break;
+            }
+        } else if (flags == conv_flags::strict) {
+            /* UTF-16 surrogate values are illegal in UTF-32 */
+            if (ch >= uni_sur_low_start && ch <= uni_sur_low_end) {
+                break;
+            }
+        }
+        if (ch < (uint32_t)0x80) {      
+            ++count;
+        } else if (ch < (uint32_t)0x800) {     
+            count += 2;
+        } else if (ch < (uint32_t)0x10000) {   
+            count += 3;
+        } else if (ch < (uint32_t)0x110000) {  
+            count += 4;
+        } else {                            
+            count += 3;
+        }
+    }
+    return count;
+}
+
+
+// utf32
+
+template <class InputIt>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),size_t>::type 
+u8_length(InputIt first, InputIt last) 
+{
+    size_t count = 0;
+    for (InputIt p = first; p < last; ++p)
+    {
+        uint32_t ch = *p;
+        if (ch < (uint32_t)0x80) {      
+            ++count;
+        } else if (ch < (uint32_t)0x800) {     
+            count += 2;
+        } else if (ch < (uint32_t)0x10000) {   
+            count += 3;
+        } else if (ch <= uni_max_legal_utf32) {  
+            count += 4;
+        } else {                            
+            count += 3;
+        }
+    }
+    return count;
+}
+
+// u32_length
+
+template <class InputIt>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value 
+                               && (sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t) || sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)),
+                               size_t>::type 
+u32_length(InputIt first, InputIt last) 
+{
+    sequence_generator<InputIt> g(first, last, unicons::conv_flags::strict);
+
+    size_t count = 0;
+    while (!g.done())
+    {
+        g.next();
+        ++count;
+    }
+    return count;
+}
+
+template <class InputIt>
+static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),
+                               size_t>::type 
+u32_length(InputIt first, InputIt last) 
+{
+    return std::distance(first,last);
 }
 
 // unicode_traits
