@@ -76,10 +76,10 @@ while (!g.done())
     g.next();
 }
 ```
-```
-H
-i
-```
+
+H   
+i   
+
 &#128578;
 
 ### Validate UTF-8 sequence
