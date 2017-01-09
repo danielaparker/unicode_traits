@@ -42,9 +42,23 @@ void append_codepoint_to_string()
                                     unicons::conv_flags::strict);
 }
 
+void generate_sequences()
+{
+    std::string source = "Hi \xf0\x9f\x99\x82"; // U+1F642
+
+    auto g = unicons::make_sequence_generator(source.begin(),source.end());
+    while (!g.done())
+    {
+        auto sequence = g.get();
+        uint32_t codepoint = g.get_codepoint();
+        g.next();
+    }
+}
+
 int main()
 {
     validate_utf8();
     validate_utf16();
     append_codepoint_to_string();
+    generate_sequences();
 }

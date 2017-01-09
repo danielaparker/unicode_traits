@@ -63,6 +63,25 @@ auto result4 = unicons::convert(&cp,&cp + 1,std::back_inserter(target4),
 ```
 Hello World &#128578;
 
+### Generate sequences
+
+```c++
+std::string source = "Hi \xf0\x9f\x99\x82"; // U+1F642
+
+auto g = unicons::make_sequence_generator(source.begin(),source.end());
+while (!g.done())
+{
+    auto sequence = g.get();
+    uint32_t codepoint = g.get_codepoint();
+    g.next();
+}
+```
+
+H
+i
+
+&#128578;
+
 ### Validate UTF-8 sequence
 
 ```c++

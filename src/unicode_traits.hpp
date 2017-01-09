@@ -1018,6 +1018,14 @@ public:
     }
 };
 
+
+template <class Iterator>
+sequence_generator<Iterator> make_sequence_generator(Iterator first, Iterator last, 
+                                                     conv_flags flags = conv_flags::strict)
+{
+    return sequence_generator<Iterator>(first,last,flags);
+}
+
 template <class InputIt>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value 
                                && (sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t) || sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)),
