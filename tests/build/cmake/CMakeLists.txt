@@ -1,6 +1,6 @@
 
 #
-# unicode_traits tests CMake file
+# unicode_traits tests CMake file 
 #
 
 cmake_minimum_required (VERSION 2.8)
