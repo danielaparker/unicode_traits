@@ -11,7 +11,7 @@ unicons::is_high_surrogate
 ### Synopsis
 ```c++
 template <class InputIt>
-bool is_high_surrogate(InputIt first, InputIt last) 
+bool is_high_surrogate(InputIt first, InputIt last) noexcept
 ```
 
 Checks if the character is a UTF-16 high surrogate code point in the range 0xd800 to 0xdbff inclusive.

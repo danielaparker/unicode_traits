@@ -11,7 +11,7 @@ unicons::detect_encoding
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<encoding,InputIt> detect_encoding(InputIt first, InputIt last) 
+std::pair<encoding,InputIt> detect_encoding(InputIt first, InputIt last) noexcept
 ```
 
 Attempts to detect the character encoding from the first four bytes of the text.

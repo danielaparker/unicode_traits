@@ -11,7 +11,7 @@ unicons::skip_bom
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<encoding_errc,InputIt> skip_bom(InputIt first, InputIt last) 
+std::pair<encoding_errc,InputIt> skip_bom(InputIt first, InputIt last) noexcept
 ```
 
 Attempts to validate that the encoding type matches the character width, and skips past a bom if present in the range defined by [first, last). 

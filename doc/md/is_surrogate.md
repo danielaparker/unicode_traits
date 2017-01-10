@@ -11,7 +11,7 @@ unicons::is_surrogate
 ### Synopsis
 ```c++
 template <class InputIt>
-bool is_surrogate(InputIt first, InputIt last) 
+bool is_surrogate(InputIt first, InputIt last) noexcept
 ```
 
 Checks if the character is a UTF-16 surrogate value in the range 0xDC00 to 0xDFFF inclusive.

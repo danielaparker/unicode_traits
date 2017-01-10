@@ -11,7 +11,7 @@ unicons::validate
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<conv_errc,InputIt> validate(InputIt first, InputIt last) 
+std::pair<conv_errc,InputIt> validate(InputIt first, InputIt last) noexcept
 ```
 
 Validates the characters in the range, defined by [first, last).

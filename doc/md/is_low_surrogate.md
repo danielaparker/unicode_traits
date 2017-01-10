@@ -11,7 +11,7 @@ unicons::is_low_surrogate
 ### Synopsis
 ```c++
 template <class InputIt>
-bool is_low_surrogate(InputIt first, InputIt last) 
+bool is_low_surrogate(InputIt first, InputIt last) noexcept
 ```
 
 Checks if the character is a UTF-16 low surrogate code point in the range 0xDC00 to 0xDFFF inclusive.

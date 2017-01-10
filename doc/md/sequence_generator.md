@@ -18,24 +18,24 @@ Member type                         |Definition
 ### Constructors
 
     sequence_generator(Iterator first, Iterator last, 
-                       conv_flags flags = conv_flags::strict)
+                       conv_flags flags = conv_flags::strict) noexcept
 Constructs a `sequence_generator` over the characters [first,last).
 
 ### Member functions
 
-    bool done() const
+    bool done() const noexcept
 Returns `true` when there are no more sequences to be read from [first,last), `false` otherwise
 
-    conv_errc status() const
+    conv_errc status() const noexcept
 Returns the status of the generator
 
-    std::pair<Iterator,size_t> get() const 
+    std::pair<Iterator,size_t> get() const noexcept
 Returns a [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains first, an iterator pointing to the first character of the sequence, and second, the length of the sequence. 
 
-    uint32_t get_codepoint() const
-Returns the codepoint corresponding to the sequence
+    uint32_t get_codepoint() const noexcept
+Returns the codepoint corresponding to the sequence, or the replacement character `0x0000FFFD` if the sequence is malformed.
 
-    void next()
+    void next() noexcept
 Moves to the next sequence
 
 ## Examples

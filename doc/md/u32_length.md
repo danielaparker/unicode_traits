@@ -11,7 +11,7 @@ unicons::u32_length
 ### Synopsis
 ```c++
 template <class InputIt>
-size_t u32_length(InputIt first, InputIt last) 
+size_t u32_length(InputIt first, InputIt last) noexcept
 ```
 
 Returns the number of UTF-32 characters (codepoints) required to represent the string.

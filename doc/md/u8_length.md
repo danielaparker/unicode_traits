@@ -11,7 +11,7 @@ unicons::u8_length
 ### Synopsis
 ```c++
 template <class InputIt>
-size_t u8_length(InputIt first, InputIt last) 
+size_t u8_length(InputIt first, InputIt last) noexcept
 ```
 
 Returns the number of UTF-8 characters required to represent the string.
