@@ -1,5 +1,6 @@
+
 #
-# unicode_traits tests suite CMake file
+# unicode_traits tests CMake file
 #
 
 cmake_minimum_required (VERSION 2.8)
@@ -12,18 +13,12 @@ project (Tests CXX)
 # load per-platform configuration
 include (../../../build/cmake/${CMAKE_SYSTEM_NAME}.cmake)
 
-file(GLOB_RECURSE UnitTests_sources ../../src/*.cpp)
+include_directories (../../src
+                     ../../../src)
 
-add_executable(unicode_traits_tests
-    ${UnitTests_sources}
-)
+file(GLOB_RECURSE Test_sources ../../src/*.cpp)
 
-target_compile_definitions (unicode_traits_tests PUBLIC)
-
-target_include_directories (PUBLIC ../../../src
-                            PRIVATE ../../src)
-
-target_link_libraries (unicode_traits_tests)
+add_executable (unicode_traits_tests ${Test_sources})
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # special link option on Linux because llvm stl rely on GNU stl
