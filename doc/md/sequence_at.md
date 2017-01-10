@@ -24,4 +24,4 @@ The source encoding scheme is assumed to be one-to-one with the character width,
 
 ### Return value
 
-An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains first, an iterator pointing to the start of the sequence, and second, the number of characters in the sequence.
+A [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains first, an iterator pointing to the start of the sequence, and second, the number of characters in the sequence.

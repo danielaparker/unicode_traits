@@ -26,5 +26,5 @@ The actual source and intended target encoding schemes are assumed to be one-to-
 
 ### Return value
 
-An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains a [conv_errc](conv_errc) error code and an iterator that points to the location in the range [first,last] where validation stopped. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc::ok`. If the error code is not `conv_errc::ok`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
+A [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [conv_errc](conv_errc) error code, and second, an iterator that points to the location in the range [first,last] where validation stopped. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc::ok`. If the error code is not `conv_errc::ok`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
 
