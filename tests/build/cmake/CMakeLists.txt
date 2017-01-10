@@ -8,7 +8,7 @@ cmake_minimum_required (VERSION 2.8)
 # load global config
 include (../../../build/cmake/config.cmake)
 
-project (Tests CXX)
+project (Tests CXX) 
 
 # load per-platform configuration
 include (../../../build/cmake/${CMAKE_SYSTEM_NAME}.cmake)
