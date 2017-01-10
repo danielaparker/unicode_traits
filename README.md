@@ -88,7 +88,7 @@ i
 std::string source = "\xE6\x97\xA5\xD1\x88\xFA";
 auto result = unicons::validate(source.begin(),source.end(),conv_flags::strict);
 
-if (result.first != unicons::uni_errc::ok)
+if (result.first != unicons::conv_errc::ok)
 {
     std::cout << make_error_code(result.first).message() << std::endl;
 }
@@ -103,7 +103,7 @@ Partial character in source, but hit end
 std::u16string source = u"\xD888\x1234";
 auto result = unicons::validate(source.begin(),source.end(),conv_flags::strict);
 
-if (result.first != unicons::uni_errc::ok)
+if (result.first != unicons::conv_errc::ok)
 {
     std::cout << make_error_code(result.first).message() << std::endl;
 }

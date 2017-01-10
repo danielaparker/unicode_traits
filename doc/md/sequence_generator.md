@@ -26,7 +26,7 @@ Constructs a `sequence_generator` over the characters [first,last).
     bool done() const
 Returns `true` when there are no more sequences to be read from [first,last), `false` otherwise
 
-    uni_errc status() const
+    conv_errc status() const
 Returns the status of the generator
 
     std::pair<Iterator,size_t> get() const 
@@ -54,10 +54,10 @@ while (!g.done())
     uint32_t cp = g.get_codepoint();    
 }
 ```
-```
-H
-i
-```
+
+H   
+i   
+
 &#128578;
 
 
