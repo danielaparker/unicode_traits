@@ -10,6 +10,8 @@ It should work with with MS VC++ 2013, MS VC++ 2015, GCC 4.8, GCC 4.9, GCC 6.2.0
 
 ## Examples
 
+In the examples below, source and target encoding schemes are deduced from the character width, UTF-8 from 8 bit characters, UTF-16 from 16 bit characters, and UTF-32 from 32 bit characters. The character type may be any integral type, signed or unsigned, with size in bits of 8, 16 or 32.
+
 ### Convert UTF8 to UTF16 and UTF32
 
 ```c++
