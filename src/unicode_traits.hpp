@@ -1218,7 +1218,7 @@ u32_length(InputIt first, InputIt last)
     return std::distance(first,last);
 }
 
-enum class encoding {u8,u16le,u16be,u32le,u32be,unknown,source_exhausted};
+enum class encoding {u8,u16le,u16be,u32le,u32be,unknown};
 
 template <class Iterator>
 static typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t),
@@ -1227,7 +1227,7 @@ detect_encoding(Iterator first, Iterator last)
 {
     if (std::distance(first,last) < 4)
     {
-        return std::make_pair(encoding::source_exhausted,last);
+        return std::make_pair(encoding::unknown,first);
     }
     Iterator it1 = first++;
     Iterator it2 = first++;
@@ -1283,9 +1283,6 @@ skip_bom(Iterator first, Iterator last)
     auto result = unicons::detect_encoding(first,last);
     switch (result.first)
     {
-    case unicons::encoding::source_exhausted:
-        return std::make_pair(encoding_errc::source_exhausted,last);
-        break;
     case unicons::encoding::u8:
         return std::make_pair(encoding_errc::ok,result.second);
         break;
@@ -1310,7 +1307,7 @@ skip_bom(Iterator first, Iterator last)
 {
     if (first == last)
     {
-        return std::make_pair(encoding_errc::source_exhausted,last);
+        return std::make_pair(encoding_errc::ok,first);
     }
     uint16_t bom = static_cast<uint16_t>(*first);
     if (bom == 0xFEFF)                  
@@ -1334,7 +1331,7 @@ skip_bom(Iterator first, Iterator last)
 {
     if (first == last)
     {
-        return std::make_pair(encoding_errc::source_exhausted,last);
+        return std::make_pair(encoding_errc::ok,first);
     }
     uint32_t bom = static_cast<uint32_t>(*first);
     if (bom == 0xFEFF0000)                  
