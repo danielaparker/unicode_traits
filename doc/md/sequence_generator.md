@@ -60,4 +60,7 @@ i
 
 &#128578;
 
+### See also
+
+[make_sequence_generator](make_sequence_generator)
 

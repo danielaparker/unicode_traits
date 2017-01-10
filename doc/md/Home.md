@@ -17,6 +17,7 @@ The `unicode_traits` classes and functions are in namespace `unicons`.
 [is_high_surrogate](is_high_surrogate)  
 [is_low_surrogate](is_low_surrogate)  
 [is_surrogate](is_surrogate)  
+[make_sequence_generator](make_sequence_generator)   
 [sequence_at](sequence_at)  
 [skip_bom](skip_bom)   
 [u32_length](u32_length)   
