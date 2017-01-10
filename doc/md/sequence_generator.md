@@ -19,7 +19,7 @@ Member type                         |Definition
 
     sequence_generator(Iterator first, Iterator last, 
                        conv_flags flags = conv_flags::strict) noexcept
-Constructs a `sequence_generator` over the characters [first,last).
+Constructs a `sequence_generator` over the characters [first,last). The user's intention for source encoding scheme is deduced from the character width, UTF-8 from 8 bit characters, UTF-16 from 16 bit characters, and UTF-32 from 32 bit characters. The character type may be any integral type, signed or unsigned, with size in bits of 8, 16 or 32.
 
 ### Member functions
 
