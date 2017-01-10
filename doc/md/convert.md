@@ -22,7 +22,7 @@ first, last | [Input iterators](http://en.cppreference.com/w/cpp/concept/InputIt
 target     | [Output iterator](http://en.cppreference.com/w/cpp/concept/OutputIterator) to the beginning of the target range. The character type may be any integral type, signed or unsigned, with size in bits of 8, 16 or 32. 
 flags       | Manages whether validation is `strict` or `lenient`.
 
-The actual source and intended target encoding schemes are assumed to be one-to-one with the character width, UTF-8 with 8 bit characters, UTF-16 with 16 bit characters, and UTF-32 with 32 bit characters. If the source contains characters that are illegal in that encoding scheme, an error code will be returned.
+The user's intentions for source and target encoding schemes are deduced from the character width, UTF-8 from 8 bit characters, UTF-16 from 16 bit characters, and UTF-32 from 32 bit characters. The character type may be any integral type, signed or unsigned, with size in bits of 8, 16 or 32.
 
 ### Return value
 
