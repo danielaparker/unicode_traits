@@ -13,6 +13,6 @@ u16le    | UTF-16 little endian
 u16be    | UTF-16 big endian    
 u32le    | UTF-32 little endian
 u32be    | UTF-32 big endian
-undetectable  | Undetectable encoding
+undetected  | Undetected encoding
 
 
