@@ -9,7 +9,7 @@ unicons::encoding_errc
 ```
 Constant                   |Description
 ---------------------------|------------------------------
-ok                         | conversion successful
+ok                         | Success
 expected_u8_found_u16      | Expected UTF-8, found UTF-16
 expected_u8_found_u32      | Expected UTF-8, found UTF-32    
 expected_u16_found_fffe    | Expected UTF-16, found non character
