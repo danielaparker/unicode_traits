@@ -991,6 +991,8 @@ class sequence_generator
     size_t length_;
     conv_errc err_cd_;
 public:
+    typedef sequence<Iterator> sequence_type;
+
     sequence_generator(Iterator first, Iterator last, 
                        conv_flags flags = conv_flags::strict) UNICONS_NOEXCEPT
         : begin_(first), last_(last), flags_(flags), 
@@ -1009,7 +1011,7 @@ public:
         return err_cd_;
     }
 
-    sequence<Iterator> get() const UNICONS_NOEXCEPT
+    sequence_type get() const UNICONS_NOEXCEPT
     {
         return sequence<Iterator>(begin_,length_);
     }
