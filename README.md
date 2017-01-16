@@ -74,7 +74,7 @@ auto g = unicons::make_sequence_generator(source.begin(),source.end());
 while (!g.done())
 {
     auto sequence = g.get();
-    uint32_t codepoint = g.get_codepoint();
+    uint32_t codepoint = sequence.codepoint();
     g.next();
 }
 ```

@@ -59,5 +59,7 @@ i
 
 ### See also
 
+[sequence](sequence)
+
 [make_sequence_generator](make_sequence_generator)
 

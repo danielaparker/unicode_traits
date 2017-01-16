@@ -14,7 +14,7 @@ template <class InputIt>
 std::pair<InputIt,size_t> sequence_at(InputIt first, InputIt last, size_t i) 
 ```
 
-Returns the ith character sequence in the range `[first, last)`.
+Returns the ith sequence in the range `[first, last)`.
 
 Parameter   |Description
 ------------|------------------------------
@@ -24,4 +24,4 @@ The user's intention for source encoding scheme is deduced from the character wi
 
 ### Return value
 
-A [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains first, an iterator pointing to the start of the sequence, and second, the number of characters in the sequence.
+A [sequence](sequenc) that represents a single codepoint.
