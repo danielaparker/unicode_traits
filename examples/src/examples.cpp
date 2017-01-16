@@ -50,7 +50,7 @@ void generate_sequences()
     while (!g.done())
     {
         auto sequence = g.get();
-        uint32_t codepoint = g.get_codepoint();
+        uint32_t codepoint = g.get().codepoint();
         g.next();
     }
 }
