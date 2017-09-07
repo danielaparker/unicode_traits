@@ -11,7 +11,14 @@ unicons::detect_encoding
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<encoding,InputIt> detect_encoding(InputIt first, InputIt last) noexcept
+detect_encoding_result<InputIt> detect_encoding(InputIt first, InputIt last) noexcept;
+
+template <class Iterator>
+struct detect_encoding_result
+{
+    Iterator it;
+    encoding ec;
+};
 ```
 
 Attempts to detect the character encoding from the first four bytes of the text.
@@ -22,4 +29,5 @@ first, last | [Input iterators](http://en.cppreference.com/w/cpp/concept/InputIt
 
 ### Return value
 
-A [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains first, a [code](encoding) that indicates the encoding, and second, an iterator that points to one past the bom if present, otherwise to `first`.
+Returns a value of type `detect_encoding_result` with `it` pointing to one past the bom if present, otherwise to `first`, and a [code](encoding) that indicates the encoding.
+

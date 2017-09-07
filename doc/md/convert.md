@@ -11,10 +11,18 @@ unicons::convert
 ### Synopsis
 ```c++
 template <class InputIt,class OutputIt>
-std::pair<conv_errc,InputIt> convert(InputIt first, InputIt last, OutputIt target, 
-                                    conv_flags flags = conv_flags::strict) 
+convert_result<InputIt> convert(InputIt first, InputIt last, OutputIt target, 
+                                conv_flags flags = conv_flags::strict) 
+
+template <class Iterator>
+struct convert_result
+{
+    Iterator it;
+    conv_errc ec;
+};
+
 ```
-Converts the characters in the range, defined by [first, last), to another range beginning at d_first.
+Converts the characters in the range, defined by [first, last), to another range beginning at `target`.
 
 Parameter|Description
 ------------------------------------|------------------------------
@@ -26,7 +34,9 @@ The user's intentions for source and target encoding schemes are deduced from th
 
 ### Return value
 
-A [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [conv_errc](conv_errc) error code, and second, an iterator that points to the location in the range [first,last] where validation stopped. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc()`. If the error code is not `conv_errc()`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
+On success, returns a value of type `convert_result` with `it` pointing to `last` in the range [first,last], and a value initialized [conv_errc](conv_errc).
+
+On error, returns a value of type `convert_result` with `it` pointing to the location in the range [first,last] where validation stopped, and a [conv_errc](conv_errc) error code. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc()`. If the error code is not `conv_errc()`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
 
 ### Exceptions
 

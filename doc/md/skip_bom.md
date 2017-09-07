@@ -11,7 +11,15 @@ unicons::skip_bom
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<encoding_errc,InputIt> skip_bom(InputIt first, InputIt last) noexcept
+skip_bom_result<InputIt> skip_bom(InputIt first, InputIt last) noexcept;
+
+template <class Iterator>
+struct skip_bom_result
+{
+    Iterator it;
+    encoding_errc ec;
+};
+
 ```
 
 Attempts to validate that the encoding type matches the character width, and skips past a bom if present in the range defined by [first, last). 
@@ -22,4 +30,7 @@ first, last | [Input iterators](http://en.cppreference.com/w/cpp/concept/InputIt
 
 ### Return value
 
-An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [encoding_errc](encoding_errc) error code and, second, an iterator that points to one past the bom if present, otherwise to `first`.
+On success, returns a value of type `skip_bom_result` with `it` pointing to the bom if present, otherwise to `first`, and a value initialized [encoding_errc](encoding_errc).
+
+On error, returns a value of type `skip_bom_result` with `it` pointing to the location in the range [first,last] where validation stopped, and a [encoding_errc](encoding_errc) error code. 
+

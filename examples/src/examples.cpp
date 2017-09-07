@@ -6,9 +6,9 @@ void validate_utf8()
     std::string source = "\xE6\x97\xA5\xD1\x88\xFA";
     auto result = unicons::validate(source.begin(),source.end());
 
-    if (result.first != unicons::conv_errc())
+    if (result.ec != unicons::conv_errc())
     {
-        std::cout << make_error_code(result.first).message() << std::endl;
+        std::cout << make_error_code(result.ec).message() << std::endl;
     }
 }
 
@@ -17,9 +17,9 @@ void validate_utf16()
     std::u16string source = u"\xD888\x1234";
     auto result = unicons::validate(source.begin(),source.end());
 
-    if (result.first != unicons::conv_errc())
+    if (result.ec != unicons::conv_errc())
     {
-        std::cout << make_error_code(result.first).message() << std::endl;
+        std::cout << make_error_code(result.ec).message() << std::endl;
     }
 }
 

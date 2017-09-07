@@ -19,8 +19,8 @@ TEST_CASE("utf8")
         std::string target;
         auto result = convert(source.begin(),source.end(),std::back_inserter(target), 
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(source == target);
     }
 
@@ -30,8 +30,8 @@ TEST_CASE("utf8")
         auto result = convert(source.begin(),source.end(),
                               std::back_inserter(target), 
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(u"Hello world \xD83D\xDE42" == target);
     }
 
@@ -41,8 +41,8 @@ TEST_CASE("utf8")
         auto result = convert(source.begin(),source.end(),
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(U"Hello world \x1F642" == target);
     }
 }
@@ -57,8 +57,8 @@ TEST_CASE( "utf16")
         auto result = convert(source.begin(),source.end(),
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK("Hello world" == target);
     }
 
@@ -68,8 +68,8 @@ TEST_CASE( "utf16")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(u"Hello world" == target);
     }
 
@@ -79,8 +79,8 @@ TEST_CASE( "utf16")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(U"Hello world" == target);
     }
 }
@@ -95,8 +95,8 @@ TEST_CASE( "utf32")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK("Hello world" == target);
     }
 
@@ -106,8 +106,8 @@ TEST_CASE( "utf32")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(u"Hello world" == target);
     }
 
@@ -117,8 +117,8 @@ TEST_CASE( "utf32")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(U"Hello world" == target);
     }
 }
@@ -139,8 +139,8 @@ TEST_CASE("utf8 tests")
         std::string target;
         auto result = convert(source.begin(),source.end(),std::back_inserter(target), 
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(source == target);
     }
 
@@ -158,8 +158,8 @@ TEST_CASE("utf8 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -178,8 +178,8 @@ TEST_CASE("utf8 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 }
@@ -202,8 +202,8 @@ TEST_CASE("utf16 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -214,8 +214,8 @@ TEST_CASE("utf16 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(source == target);
     }
 
@@ -230,8 +230,8 @@ TEST_CASE("utf16 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 }
@@ -254,8 +254,8 @@ TEST_CASE("utf32 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -270,8 +270,8 @@ TEST_CASE("utf32 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -282,8 +282,8 @@ TEST_CASE("utf32 tests")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(source == target);
     }
 }
@@ -307,8 +307,8 @@ TEST_CASE("utf32 to utf8")
         auto result = convert(source.begin(),source.end(),
                                        std::back_inserter(target),
                                        conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -323,8 +323,8 @@ TEST_CASE("utf32 to utf8")
         auto result = convert(source.begin(),source.end(),
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 
@@ -339,8 +339,8 @@ TEST_CASE("utf32 to utf8")
         auto result = convert(source.begin(), source.end(),
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == source.end());
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == source.end());
         CHECK(expected == target);
     }
 }
@@ -357,8 +357,8 @@ TEST_CASE("append codepoint to string")
         auto result = convert(&cp,&cp + 1,
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == &cp + 1);
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == &cp + 1);
         CHECK(expected == target);
     }
 
@@ -370,8 +370,8 @@ TEST_CASE("append codepoint to string")
         auto result = convert(&cp,&cp + 1,
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == &cp + 1);
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == &cp + 1);
         CHECK(expected == target);
     }
 
@@ -383,8 +383,8 @@ TEST_CASE("append codepoint to string")
         auto result = convert(&cp,&cp + 1,
                               std::back_inserter(target),
                               conv_flags::strict);
-        REQUIRE(result.first == conv_errc());
-        CHECK(result.second == &cp + 1);
+        REQUIRE(result.ec == conv_errc());
+        CHECK(result.it == &cp + 1);
         CHECK(expected == target);
     }
 }

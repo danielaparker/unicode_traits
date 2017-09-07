@@ -11,7 +11,14 @@ unicons::validate
 ### Synopsis
 ```c++
 template <class InputIt>
-std::pair<conv_errc,InputIt> validate(InputIt first, InputIt last) noexcept
+convert_result<InputIt> validate(InputIt first, InputIt last) noexcept
+
+template <class Iterator>
+struct convert_result
+{
+    Iterator it;
+    conv_errc ec;
+};
 ```
 
 Validates the characters in the range, defined by [first, last).
@@ -24,4 +31,7 @@ The user's intention for source encoding scheme is deduced from the character wi
 
 ### Return value
 
-An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [conv_errc](conv_errc) error code and, second, an iterator that points to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc()`, the iterator points to the first character of the sequence that is illegal.
+On success, returns a value of type `convert_result` with `it` pointing to `last` in the range [first,last] where validation stopped, and a value initialized [conv_errc](conv_errc).
+
+On error, returns a value of type `convert_result` with `it` pointing to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc()`, the iterator points to the first character of the sequence that is illegal.  
+
