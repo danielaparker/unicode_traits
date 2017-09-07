@@ -120,7 +120,6 @@ enum class conv_flags
 
 enum class conv_errc 
 {
-    ok = 0,                     // conversion successful
     over_long_utf8_sequence,    // over long utf8 sequence
     expected_continuation_byte, // expected continuation byte    
     unpaired_high_surrogate,    // unpaired high surrogate UTF-16
@@ -177,7 +176,6 @@ std::error_code make_error_code(conv_errc result)
 
 enum class encoding_errc
 {
-    ok = 0,
     expected_u8_found_u16,
     expected_u8_found_u32,
     expected_u16_found_fffe,
@@ -223,7 +221,20 @@ std::error_code make_error_code(encoding_errc result)
 {
     return std::error_code(static_cast<int>(result),encoding_error_category());
 }
+}
 
+namespace std {
+    template<>
+    struct is_error_code_enum<unicons::conv_errc> : public true_type
+    {
+    };
+    template<>
+    struct is_error_code_enum<unicons::encoding_errc> : public true_type
+    {
+    };
+}
+
+namespace unicons {
 
 // utf8
 
@@ -236,14 +247,19 @@ is_legal_utf8(Iterator first, size_t length)
     uint8_t a;
     Iterator srcptr = first+length;
     switch (length) {
-    default: return conv_errc::over_long_utf8_sequence;
-        /* Everything else falls through when "true"... */
-    case 4: if (((a = (*--srcptr))& 0xC0) != 0x80) 
-        return conv_errc::expected_continuation_byte;
-    case 3: if (((a = (*--srcptr))& 0xC0) != 0x80) 
-        return conv_errc::expected_continuation_byte;
-    case 2: if (((a = (*--srcptr))& 0xC0) != 0x80) 
-        return conv_errc::expected_continuation_byte;
+    default:
+        return conv_errc::over_long_utf8_sequence;
+    case 4:
+        if (((a = (*--srcptr))& 0xC0) != 0x80)
+            return conv_errc::expected_continuation_byte;
+        // FALLTHRU
+    case 3:
+        if (((a = (*--srcptr))& 0xC0) != 0x80)
+            return conv_errc::expected_continuation_byte;
+        // FALLTHRU
+    case 2:
+        if (((a = (*--srcptr))& 0xC0) != 0x80)
+            return conv_errc::expected_continuation_byte;
 
         switch (static_cast<uint8_t>(*first)) 
         {
@@ -255,13 +271,16 @@ is_legal_utf8(Iterator first, size_t length)
             default:   if (a < 0x80) return conv_errc::source_illegal;
         }
 
-    case 1: if (static_cast<uint8_t>(*first) >= 0x80 && static_cast<uint8_t>(*first) < 0xC2) 
-        return conv_errc::source_illegal;
+        // FALLTHRU
+    case 1:
+        if (static_cast<uint8_t>(*first) >= 0x80 && static_cast<uint8_t>(*first) < 0xC2)
+            return conv_errc::source_illegal;
+        // FALLTHRU
     }
     if (static_cast<uint8_t>(*first) > 0xF4) 
         return conv_errc::source_illegal;
 
-    return conv_errc::ok;
+    return conv_errc();
 }
 
 template <class...> using void_t = void;
@@ -319,12 +338,12 @@ struct is_compatible_output_iterator<OutputIt,CharT,
 
 template <class InputIt,class OutputIt>
 typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
-                               && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<conv_errc,InputIt>>::type 
+                        && is_compatible_output_iterator<OutputIt,uint8_t>::value,std::pair<conv_errc,InputIt>>::type 
 convert(InputIt first, InputIt last, OutputIt target, conv_flags flags=conv_flags::strict) 
 {
     (void)flags;
 
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
     while (first != last) 
     {
         size_t length = trailing_bytes_for_utf8[static_cast<uint8_t>(*first)] + 1;
@@ -332,7 +351,7 @@ convert(InputIt first, InputIt last, OutputIt target, conv_flags flags=conv_flag
         {
             return std::make_pair(conv_errc::source_exhausted,first);
         }
-        if ((result=is_legal_utf8(first, length)) != conv_errc::ok)
+        if ((result=is_legal_utf8(first, length)) != conv_errc())
         {
             return std::make_pair(result,first);
         }
@@ -354,7 +373,7 @@ convert(InputIt first, InputIt last,
         OutputIt target, 
         conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -366,7 +385,7 @@ convert(InputIt first, InputIt last,
             break;
         }
         /* Do this check whether lenient or strict */
-        if ((result=is_legal_utf8(first, extra_bytes_to_read+1)) != conv_errc::ok)
+        if ((result=is_legal_utf8(first, extra_bytes_to_read+1)) != conv_errc())
         {
             break;
         }
@@ -421,7 +440,7 @@ convert(InputIt first, InputIt last,
                  OutputIt target, 
                  conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first < last) 
     {
@@ -433,7 +452,7 @@ convert(InputIt first, InputIt last,
             break;
         }
         /* Do this check whether lenient or strict */
-        if ((result=is_legal_utf8(first, extra_bytes_to_read+1)) != conv_errc::ok) {
+        if ((result=is_legal_utf8(first, extra_bytes_to_read+1)) != conv_errc()) {
             break;
         }
         /*
@@ -481,7 +500,7 @@ typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>:
 convert(InputIt first, InputIt last, 
                  OutputIt target, 
                  conv_flags flags = conv_flags::strict) {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
     while (first < last) {
         unsigned short bytes_to_write = 0;
         const uint32_t byteMask = 0xBF;
@@ -572,7 +591,7 @@ convert(InputIt first, InputIt last,
         OutputIt target, 
         conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -626,7 +645,7 @@ convert(InputIt first, InputIt last,
                  OutputIt target, 
                  conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -673,7 +692,7 @@ convert(InputIt first, InputIt last,
         OutputIt target, 
         conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
     while (first < last) {
         unsigned short bytes_to_write = 0;
         const uint32_t byteMask = 0xBF;
@@ -706,11 +725,18 @@ convert(InputIt first, InputIt last,
         uint8_t byte3 = 0;
         uint8_t byte4 = 0;
 
-        switch (bytes_to_write) { // note: everything falls through
-        case 4: byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-        case 3: byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-        case 2: byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-        case 1: byte1 = (uint8_t) (ch | first_byte_mark[bytes_to_write]);
+        switch (bytes_to_write) {
+        case 4:
+            byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            // FALLTHRU
+        case 3:
+            byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            // FALLTHRU
+        case 2:
+            byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
+            // FALLTHRU
+        case 1:
+            byte1 = (uint8_t) (ch | first_byte_mark[bytes_to_write]);
         }
 
         switch (bytes_to_write) 
@@ -745,7 +771,7 @@ convert(InputIt first, InputIt last,
                  OutputIt target, 
                  conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -786,7 +812,7 @@ convert(InputIt first, InputIt last,
                  OutputIt target, 
                  conv_flags flags = conv_flags::strict) 
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -819,7 +845,7 @@ typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>:
                                ,std::pair<conv_errc,InputIt>>::type 
 validate(InputIt first, InputIt last) UNICONS_NOEXCEPT
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
     while (first != last) 
     {
         size_t length = trailing_bytes_for_utf8[static_cast<uint8_t>(*first)] + 1;
@@ -827,7 +853,7 @@ validate(InputIt first, InputIt last) UNICONS_NOEXCEPT
         {
             return std::make_pair(conv_errc::source_exhausted,first);
         }
-        if ((result=is_legal_utf8(first, length)) != conv_errc::ok)
+        if ((result=is_legal_utf8(first, length)) != conv_errc())
         {
             return std::make_pair(result,first);
         }
@@ -843,7 +869,7 @@ typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>:
                                ,std::pair<conv_errc,InputIt>>::type 
 validate(InputIt first, InputIt last)  UNICONS_NOEXCEPT
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -887,7 +913,7 @@ typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>:
                                ,std::pair<conv_errc,InputIt>>::type 
 validate(InputIt first, InputIt last) UNICONS_NOEXCEPT
 {
-    conv_errc  result = conv_errc::ok;
+    conv_errc  result = conv_errc();
 
     while (first != last) 
     {
@@ -940,10 +966,17 @@ public:
         default:
             return replacement_char;
             break;
-        case 4: ch += static_cast<uint8_t>(*it++); ch <<= 6;
-        case 3: ch += static_cast<uint8_t>(*it++); ch <<= 6;
-        case 2: ch += static_cast<uint8_t>(*it++); ch <<= 6;
-        case 1: ch += static_cast<uint8_t>(*it++);
+        case 4:
+            ch += static_cast<uint8_t>(*it++); ch <<= 6;
+            // FALLTHRU
+        case 3:
+            ch += static_cast<uint8_t>(*it++); ch <<= 6;
+            // FALLTHRU
+        case 2:
+            ch += static_cast<uint8_t>(*it++); ch <<= 6;
+            // FALLTHRU
+        case 1:
+            ch += static_cast<uint8_t>(*it++);
             ch -= offsets_from_utf8[length_ - 1];
             break;
         }
@@ -1011,14 +1044,14 @@ public:
     sequence_generator(Iterator first, Iterator last, 
                        conv_flags flags = conv_flags::strict) UNICONS_NOEXCEPT
         : begin_(first), last_(last), flags_(flags), 
-          length_(0), err_cd_(conv_errc::ok)
+          length_(0), err_cd_(conv_errc())
     {
         next();
     }
 
     bool done() const UNICONS_NOEXCEPT
     {
-        return err_cd_ != conv_errc::ok || begin_ == last_;
+        return err_cd_ != conv_errc() || begin_ == last_;
     }
 
     conv_errc status() const UNICONS_NOEXCEPT
@@ -1043,7 +1076,7 @@ public:
             {
                 err_cd_ = conv_errc::source_exhausted;
             }
-            else if ((err_cd_ = is_legal_utf8(begin_, length)) != conv_errc::ok)
+            else if ((err_cd_ = is_legal_utf8(begin_, length)) != conv_errc())
             {
             }
             else
@@ -1331,7 +1364,7 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
     switch (result.first)
     {
     case unicons::encoding::u8:
-        return std::make_pair(encoding_errc::ok,result.second);
+        return std::make_pair(encoding_errc(),result.second);
         break;
     case unicons::encoding::u16le:
     case unicons::encoding::u16be:
@@ -1342,7 +1375,7 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
         return std::make_pair(encoding_errc::expected_u8_found_u32,result.second);
         break;
     default:
-        return std::make_pair(encoding_errc::ok,result.second);
+        return std::make_pair(encoding_errc(),result.second);
         break;
     }
 }
@@ -1354,12 +1387,12 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
 {
     if (first == last)
     {
-        return std::make_pair(encoding_errc::ok,first);
+        return std::make_pair(encoding_errc(),first);
     }
     uint16_t bom = static_cast<uint16_t>(*first);
     if (bom == 0xFEFF)                  
     {
-        return std::make_pair(encoding_errc::ok,++first);
+        return std::make_pair(encoding_errc(),++first);
     }
     else if (bom == 0xFFFE) 
     {
@@ -1367,7 +1400,7 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
     }
     else
     {
-        return std::make_pair(encoding_errc::ok,first);
+        return std::make_pair(encoding_errc(),first);
     }
 }
 
@@ -1378,12 +1411,12 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
 {
     if (first == last)
     {
-        return std::make_pair(encoding_errc::ok,first);
+        return std::make_pair(encoding_errc(),first);
     }
     uint32_t bom = static_cast<uint32_t>(*first);
     if (bom == 0xFEFF0000)                  
     {
-        return std::make_pair(encoding_errc::ok,++first);
+        return std::make_pair(encoding_errc(),++first);
     }
     else if (bom == 0xFFFE0000) 
     {
@@ -1391,21 +1424,10 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
     }
     else
     {
-        return std::make_pair(encoding_errc::ok,first);
+        return std::make_pair(encoding_errc(),first);
     }
 }
 
-}
-
-namespace std {
-    template<>
-    struct is_error_code_enum<unicons::conv_errc> : public true_type
-    {
-    };
-    template<>
-    struct is_error_code_enum<unicons::encoding_errc> : public true_type
-    {
-    };
 }
 
 #endif

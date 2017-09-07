@@ -8,7 +8,6 @@ unicons::conv_errc
 ```
 Constant                   |Description
 ---------------------------|------------------------------
-ok                         | conversion successful
 over_long_utf8_sequence    | over long utf8 sequence
 expected_continuation_byte | expected continuation byte    
 unpaired_high_surrogate    | unpaired high surrogate UTF-16

@@ -24,4 +24,4 @@ The user's intention for source encoding scheme is deduced from the character wi
 
 ### Return value
 
-An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [conv_errc](conv_errc) error code and, second, an iterator that points to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc::ok`, the iterator points to the first character of the sequence that is illegal.
+An [std::pair](http://en.cppreference.com/w/cpp/utility/pair) that contains, first, a [conv_errc](conv_errc) error code and, second, an iterator that points to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc()`, the iterator points to the first character of the sequence that is illegal.
