@@ -93,6 +93,12 @@ const uint16_t sur_low_start = 0xDC00;
 const uint16_t sur_low_end = 0xDFFF;
 
 inline
+static bool is_continuation_byte(unsigned char ch)
+{
+    return (ch & 0xC0) == 0x80;
+}
+
+inline
 bool is_high_surrogate(uint32_t ch) UNICONS_NOEXCEPT
 {
     return (ch >= sur_high_start && ch <= sur_high_end);
@@ -120,12 +126,13 @@ enum class conv_flags
 
 enum class conv_errc 
 {
-    over_long_utf8_sequence = 1,    // over long utf8 sequence
-    expected_continuation_byte, // expected continuation byte    
-    unpaired_high_surrogate,    // unpaired high surrogate UTF-16
-    illegal_surrogate_value,    // UTF-16 surrogate values are illegal in UTF-32
-    source_exhausted,           // partial character in source, but hit end
-    source_illegal              // source sequence is illegal/malformed
+    ok = 0,
+    over_long_utf8_sequence = 1, // over long utf8 sequence
+    expected_continuation_byte,  // expected continuation byte    
+    unpaired_high_surrogate,     // unpaired high surrogate UTF-16
+    illegal_surrogate_value,     // UTF-16 surrogate values are illegal in UTF-32
+    source_exhausted,            // partial character in source, but hit end
+    source_illegal               // source sequence is illegal/malformed
 };
 
 class Unicode_traits_error_category_impl_
@@ -176,6 +183,7 @@ std::error_code make_error_code(conv_errc result)
 
 enum class encoding_errc
 {
+    ok = 0,
     expected_u8_found_u16 = 1,
     expected_u8_found_u32,
     expected_u16_found_fffe,
