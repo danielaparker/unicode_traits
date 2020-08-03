@@ -8,7 +8,7 @@ set(UNICONS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Versioning
 # ==========
 
-file(STRINGS "${UNICONS_INCLUDE_DIR}/unicons_traits.hpp" unicons_version_defines
+file(STRINGS "${UNICONS_INCLUDE_DIR}/unicode_traits.hpp" unicons_version_defines
      REGEX "#define UNICONS_VERSION_(MAJOR|MINOR|PATCH)")
 foreach(ver ${unicons_version_defines})
     if(ver MATCHES "#define UNICONS_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
@@ -47,7 +47,7 @@ install(TARGETS unicons
 export(EXPORT ${PROJECT_NAME}-targets
        FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
-install(DIRECTORY ${UNICONS_INCLUDE_DIR}/unicons
+install(DIRECTORY ${UNICONS_INCLUDE_DIR}/unicode_traits
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # GNUInstallDirs "DATADIR" wrong here; CMake search path wants "share".
