@@ -14,7 +14,7 @@ project (Tests CXX)
 include (../../../build/cmake/${CMAKE_SYSTEM_NAME}.cmake)
 
 include_directories (../../src
-                     ../../../src)
+                     ../../../include)
 
 file(GLOB_RECURSE Test_sources ../../src/*.cpp)
 
