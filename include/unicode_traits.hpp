@@ -422,12 +422,12 @@ convert(InputIt first, InputIt last,
          * The cases all fall through. See "Note A" below.
          */
         switch (extra_bytes_to_read) {
-            case 5: ch += static_cast<uint8_t>(*first++); ch <<= 6; /* remember, illegal UTF-8 */
-            case 4: ch += static_cast<uint8_t>(*first++); ch <<= 6; /* remember, illegal UTF-8 */
-            case 3: ch += static_cast<uint8_t>(*first++); ch <<= 6;
-            case 2: ch += static_cast<uint8_t>(*first++); ch <<= 6;
-            case 1: ch += static_cast<uint8_t>(*first++); ch <<= 6;
-            case 0: ch += static_cast<uint8_t>(*first++);
+            case 5: ch += static_cast<uint8_t>(*first++); ch <<= 6; UNICONS_FALLTHROUGH; /* remember, illegal UTF-8 */
+            case 4: ch += static_cast<uint8_t>(*first++); ch <<= 6; UNICONS_FALLTHROUGH; /* remember, illegal UTF-8 */
+            case 3: ch += static_cast<uint8_t>(*first++); ch <<= 6; UNICONS_FALLTHROUGH;
+            case 2: ch += static_cast<uint8_t>(*first++); ch <<= 6; UNICONS_FALLTHROUGH;
+            case 1: ch += static_cast<uint8_t>(*first++); ch <<= 6; UNICONS_FALLTHROUGH;
+            case 0: ch += static_cast<uint8_t>(*first++); break;
         }
         ch -= offsets_from_utf8[extra_bytes_to_read];
 
