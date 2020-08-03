@@ -49,7 +49,7 @@
 #include <type_traits>
 #include <system_error>
 
-namespace jsoncons { namespace unicons {
+namespace unicons {
 
 /*
  * Magic values subtracted from a buffer value during UTF8 conversion.
@@ -190,16 +190,15 @@ std::error_code make_error_code(conv_errc result)
 }
 
 } // unicons
-} // jsoncons
 
 namespace std {
     template<>
-    struct is_error_code_enum<jsoncons::unicons::conv_errc> : public true_type
+    struct is_error_code_enum<unicons::conv_errc> : public true_type
     {
     };
 }
 
-namespace jsoncons { namespace unicons {
+namespace unicons {
 
 // encoding_errc
 
@@ -1487,11 +1486,10 @@ skip_bom(Iterator first, Iterator last) UNICONS_NOEXCEPT
 }
 
 } // unicons
-} // jsoncons
 
 namespace std {
     template<>
-    struct is_error_code_enum<jsoncons::unicons::encoding_errc> : public true_type
+    struct is_error_code_enum<unicons::encoding_errc> : public true_type
     {
     };
 }

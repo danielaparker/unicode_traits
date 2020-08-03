@@ -1,7 +1,7 @@
 // Copyright 2016 Daniel Parker
 // Distributed under Boost license
 
-#include <catch.hpp>
+#include <catch/catch.hpp>
 #include <unicode_traits.hpp>
 #include <iostream>
 #include <cstdint>
