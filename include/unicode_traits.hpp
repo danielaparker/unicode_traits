@@ -601,10 +601,10 @@ convert(InputIt first, InputIt last,
         uint8_t byte4 = 0;
 
         switch (bytes_to_write) { // note: everything falls through
-            case 4: byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 3: byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 2: byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;
-            case 1: byte1 = (uint8_t)(ch | first_byte_mark[bytes_to_write]);
+            case 4: byte4 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;UNICONS_FALLTHROUGH;
+            case 3: byte3 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;UNICONS_FALLTHROUGH;
+            case 2: byte2 = (uint8_t)((ch | byteMark) & byteMask); ch >>= 6;UNICONS_FALLTHROUGH;
+            case 1: byte1 = (uint8_t)(ch | first_byte_mark[bytes_to_write]);break;
         }
         switch (bytes_to_write) 
         {
