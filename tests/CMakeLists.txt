@@ -51,7 +51,6 @@ set(UNICONS_TESTS_SOURCES
    ${UNICONS_TESTS_DIR}/src/sequence_generator_tests.cpp
    ${UNICONS_TESTS_DIR}/src/u8_length_tests.cpp
    ${UNICONS_TESTS_DIR}/src/u32_length_tests.cpp
-   ${UNICONS_TESTS_DIR}/src/unicode_traits_tests.cpp
    ${UNICONS_TESTS_DIR}/src/validate_tests.cpp
    ${UNICONS_TESTS_DIR}/src/tests_main.cpp
 )
