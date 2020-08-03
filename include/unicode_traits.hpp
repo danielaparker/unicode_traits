@@ -13,8 +13,12 @@
  * Unicode Standard."
 */
 
-#ifndef JSONCONS_UNICONS_UNICODE_TRAITS_HPP
-#define JSONCONS_UNICONS_UNICODE_TRAITS_HPP
+#ifndef UNICONS_UNICODE_TRAITS_HPP
+#define UNICONS_UNICODE_TRAITS_HPP
+    
+#define UNICONS_VERSION_MAJOR 1
+#define UNICONS_VERSION_MINOR 0
+#define UNICONS_VERSION_PATCH 0
 
 #if defined(__clang__) 
 #  define UNICONS_FALLTHROUGH [[clang::fallthrough]]

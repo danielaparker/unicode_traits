@@ -5,6 +5,20 @@ project(unicons)
 set(UNICONS_PROJECT_DIR ${PROJECT_SOURCE_DIR})
 set(UNICONS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Versioning
+# ==========
+
+file(STRINGS "${UNICONS_INCLUDE_DIR}/unicons_traits.hpp" unicons_version_defines
+     REGEX "#define UNICONS_VERSION_(MAJOR|MINOR|PATCH)")
+foreach(ver ${unicons_version_defines})
+    if(ver MATCHES "#define UNICONS_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
+        set(UNICONS_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+set(${PROJECT_NAME}_VERSION
+    ${UNICONS_VERSION_MAJOR}.${UNICONS_VERSION_MINOR}.${UNICONS_VERSION_PATCH})
+message(STATUS "unicons v${${PROJECT_NAME}_VERSION}")
+
 # Build
 # =====
 
