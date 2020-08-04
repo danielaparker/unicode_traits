@@ -48,6 +48,7 @@ set(UNICONS_TESTS_SOURCES
    ${UNICONS_TESTS_DIR}/src/detect_encoding_tests.cpp
    ${UNICONS_TESTS_DIR}/src/helper_tests.cpp
    ${UNICONS_TESTS_DIR}/src/sequence_at_tests.cpp
+   ${UNICONS_TESTS_DIR}/src/codepoint_iterator_tests.cpp
    ${UNICONS_TESTS_DIR}/src/sequence_generator_tests.cpp
    ${UNICONS_TESTS_DIR}/src/u8_length_tests.cpp
    ${UNICONS_TESTS_DIR}/src/u32_length_tests.cpp
