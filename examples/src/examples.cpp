@@ -42,16 +42,33 @@ void append_codepoint_to_string()
                                     unicons::conv_flags::strict);
 }
 
-void generate_sequences()
+void access_codepoints()
 {
-    std::string source = "Hi \xf0\x9f\x99\x82"; // U+1F642
+    std::u16string source = u"Hi \xD83D\xDE42"; // U+1F642
 
-    auto g = unicons::make_sequence_generator(source.begin(),source.end());
-    while (!g.done())
+    std::error_code ec;
+    auto it = make_codepoint_iterator(source.begin(),source.end(),ec);
+    auto last = end(it);
+
+    while (!ec && it != end)
     {
-        auto sequence = g.get();
-        uint32_t codepoint = g.get().codepoint();
-        g.next();
+        uint32_t cp = *it;
+        it.increment(ec);    
+    }
+}
+
+void access_nth_codepoint()
+{
+    std::u16string source = u"Hi \xD83D\xDE42"; // U+1F642
+
+    std::error_code ec;
+    auto it = make_codepoint_iterator(source.begin(),source.end(),ec);
+
+    unicons::advance(it, 3, ec);
+
+    if (!ec)
+    {
+        std::cout << *it << "\n";
     }
 }
 
@@ -60,5 +77,6 @@ int main()
     validate_utf8();
     validate_utf16();
     append_codepoint_to_string();
-    generate_sequences();
+    access_codepoints();
+    access_nth_codepoint();
 }

@@ -135,4 +135,44 @@ i
 
 &#128578;
 
+### Access nth codepoint in UTF-16 string (non-throwing)
+
+```c++
+std::u16string source = u"Hi \xD83D\xDE42"; // U+1F642
+
+std::error_code ec;
+auto it = make_codepoint_iterator(source.begin(),source.end(),ec);
+
+unicons::advance(it, 3, ec);
+
+if (!ec)
+{
+    std::cout << *it << "\n";
+}
+```
+Output:
+```
+128578
+```
+
+### Access nth codepoint in UTF-8 string (potentially throwing)
+
+```c++
+std::string source = "Hi \xf0\x9f\x99\x82"; // U+1F642
+
+try
+{
+    auto it = make_codepoint_iterator(source.begin(),source.end());
+    std::advance(it, 3);
+    std::cout << *it << "\n";
+}
+catch (const unicons::unicode_error& e)
+{
+   std::cerr << e.what() << "\n"; 
+}
+```
+Output:
+```
+128578
+```
 
