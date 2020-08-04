@@ -83,9 +83,11 @@ These non-member functions support the use of `codepoint_iterator`s with range-b
 
     template <typename Iter, typename... Args>
     codepoint_iterator<Iter> make_codepoint_iterator(Iter first, Args&& ... args);
+Creates a `codepoint_iterator`, using `args` as the argument list in the constructor of the `codepoint_iterator`.
 
-    template <typename InputIt, typename Distance>
-    void advance(InputIt& it, Distance n, std::error_code& ec) noexcept;
+    template <typename Iter, typename Distance>
+    void advance(codepoint_iterator<Iter>& it, Distance n, std::error_code& ec) noexcept;
+Increments the codepoint iterator `it` by `n` codepoints.
 
 ## Examples
 

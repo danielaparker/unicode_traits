@@ -1534,8 +1534,8 @@ namespace unicons {
         return codepoint_iterator<Iter>(first, std::forward<Args>(args)...);
     }
 
-    template <typename InputIt, typename Distance>
-    void advance(InputIt& it, Distance n, std::error_code& ec) noexcept
+    template <typename Iter, typename Distance>
+    void advance(codepoint_iterator<Iter>& it, Distance n, std::error_code& ec) noexcept    
     {
         for (std::size_t i = 0; !ec && i < n; ++i)
         {
