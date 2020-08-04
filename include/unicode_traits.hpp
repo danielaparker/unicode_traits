@@ -730,8 +730,8 @@ namespace unicons {
     typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
-                     OutputIt target, 
-                     conv_flags flags = conv_flags::strict) 
+            OutputIt target, 
+            conv_flags flags = conv_flags::strict) 
     {
         conv_errc  result = conv_errc();
 
@@ -856,8 +856,8 @@ namespace unicons {
     typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
-                     OutputIt target, 
-                     conv_flags flags = conv_flags::strict) 
+            OutputIt target, 
+            conv_flags flags = conv_flags::strict) 
     {
         conv_errc  result = conv_errc();
 
@@ -1325,7 +1325,7 @@ namespace unicons {
 
         codepoint_iterator operator++(int) // postfix increment
         {
-            json_ptr_iterator temp(*this);
+            codepoint_iterator temp(*this);
             ++(*this);
             return temp;
         }
@@ -1515,6 +1515,12 @@ namespace unicons {
 
     template <typename InputIt>
     inline codepoint_iterator<InputIt> end(const codepoint_iterator<InputIt>&) noexcept { return codepoint_iterator<InputIt>(); }
+
+    template <typename Iter, typename... Args>
+    codepoint_iterator<Iter> make_codepoint_iterator(Iter first, Iter last, Args&& ... args)
+    {
+        return codepoint_iterator<Iter>(first, last, std::forward<Args>(args)...);
+    }
 
     // u8_length
 

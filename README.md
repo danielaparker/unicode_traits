@@ -63,17 +63,19 @@ auto result4 = unicons::convert(&cp,&cp + 1,std::back_inserter(target4),
 ```
 Hello World &#128578;
 
-### Generate sequences
+### Codepoint iterator (without exceptions)
 
 ```c++
 std::string source = "Hi \xf0\x9f\x99\x82"; // U+1F642
 
-auto g = unicons::make_sequence_generator(source.begin(),source.end());
-while (!g.done())
+std::error_code ec;
+auto it = unicons::make_codepoint_iterator(source.begin(),source.end(),ec);
+auto last = end(it);
+
+while (!ec && it != last)
 {
-    auto sequence = g.get();
-    uint32_t codepoint = sequence.codepoint();
-    g.next();
+    uint32_t codepoint = *it;
+    it.increment(ec);
 }
 ```
 
