@@ -1418,7 +1418,7 @@ namespace unicons {
 
         template <typename CharT = typename std::iterator_traits<Iter>::value_type>
         typename std::enable_if<is_char32<CharT>::value,codepoint_iterator& >::type 
-        increment(std::error_code& ec) noexcept
+        increment(std::error_code&) noexcept
         {
             it_ += length_;
             length_ = 1;
