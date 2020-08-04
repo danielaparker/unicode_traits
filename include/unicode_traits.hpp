@@ -1281,10 +1281,21 @@ namespace unicons {
         using reference = const value_type&;
         using iterator_category = std::input_iterator_tag;
 
-        using sequence_type = sequence<Iter>;
-
-        codepoint_iterator()
+        codepoint_iterator() noexcept
             : length_(0)
+        {
+        }
+
+        codepoint_iterator(Iter first, Iter last, 
+                           conv_flags flags = conv_flags::strict) 
+            : it_(first), last_(last), flags_(flags), length_(0)
+        {
+            operator++();
+        }
+
+        codepoint_iterator(Iter first, Iter last, 
+                           std::error_code& ec) noexcept
+            : codepoint_iterator(first, last, conv_flags::strict, ec)
         {
         }
 
@@ -1295,21 +1306,15 @@ namespace unicons {
             increment(ec);
         }
 
-        codepoint_iterator(Iter first, Iter last, 
-                           std::error_code& ec) noexcept
-            : it_(first), last_(last), flags_(conv_flags::strict), length_(0)
-        {
-            increment(ec);
-        }
+        codepoint_iterator(const codepoint_iterator&) = default;
 
-        codepoint_iterator(Iter first, Iter last, 
-                           conv_flags flags = conv_flags::strict) 
-            : it_(first), last_(last), flags_(flags), length_(0)
-        {
-            operator++();
-        }
+        codepoint_iterator(codepoint_iterator&&) = default; 
 
-        constexpr iterator_type base() const
+        codepoint_iterator& operator=(const codepoint_iterator&) = default;
+
+        codepoint_iterator& operator=(codepoint_iterator&&) = default;
+
+        constexpr iterator_type base() const noexcept
         {
             return it_;
         }
