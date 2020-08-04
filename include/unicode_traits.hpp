@@ -45,26 +45,41 @@ namespace unicons {
     using void_t = std::void_t; 
     #endif
 
-    // is_utf8
+    // is_char8
     template <class CharT, class Enable=void>
-    struct is_utf8 : std::false_type {};
+    struct is_char8 : std::false_type {};
 
     template <class CharT>
-    struct is_utf8<CharT, typename std::enable_if<sizeof(uint8_t) == sizeof(CharT)>::type> : std::true_type {};
+    struct is_char8<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
+                                                   !std::is_same<CharT,bool>::value &&
+                                                   sizeof(uint8_t) == sizeof(CharT)>::type> : std::true_type {};
 
-    // is_utf16
+    // is_char16
     template <class CharT, class Enable=void>
-    struct is_utf16 : std::false_type {};
+    struct is_char16 : std::false_type {};
 
     template <class CharT>
-    struct is_utf16<CharT, typename std::enable_if<std::is_same<CharT,char16_t>::value || sizeof(uint16_t) == sizeof(CharT)>::type> : std::true_type {};
+    struct is_char16<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
+                                                   !std::is_same<CharT,bool>::value &&
+                                                   std::is_same<CharT,char16_t>::value || sizeof(uint16_t) == sizeof(CharT)>::type> : std::true_type {};
 
-    // is_utf32
+    // is_char32
     template <class CharT, class Enable=void>
-    struct is_utf32 : std::false_type {};
+    struct is_char32 : std::false_type {};
 
     template <class CharT>
-    struct is_utf32<CharT, typename std::enable_if<std::is_same<CharT,char32_t>::value || (!std::is_same<CharT,char16_t>::value && sizeof(uint32_t) == sizeof(CharT))>::type> : std::true_type {};
+    struct is_char32<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
+                                                   !std::is_same<CharT,bool>::value &&
+                                                   std::is_same<CharT,char32_t>::value || (!std::is_same<CharT,char16_t>::value && sizeof(uint32_t) == sizeof(CharT))>::type> : std::true_type {};
+
+    // is_character
+    template <class CharT, class Enable=void>
+    struct is_character : std::false_type {};
+
+    template <class CharT>
+    struct is_character<CharT, typename std::enable_if<is_char8<CharT>::value || 
+                                                       is_char16<CharT>::value ||
+                                                       is_char32<CharT>::value>::type> : std::true_type {};
 
     /*
      * Magic values subtracted from a buffer value during UTF8 conversion.
@@ -269,8 +284,7 @@ namespace unicons {
     // utf8
 
     template <class Iterator>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value 
-                                  && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t), 
+    typename std::enable_if<is_char8<typename std::iterator_traits<Iterator>::value_type>::value, 
                                   conv_errc >::type
     is_legal_utf8(Iterator first, std::size_t length) 
     {
@@ -343,7 +357,7 @@ namespace unicons {
     struct is_compatible_output_iterator<OutputIt,CharT,
         typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
                                 && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
-                                && std::is_integral<typename OutputIt::container_type::value_type>::value 
+                                && is_character<typename OutputIt::container_type::value_type>::value 
                                 && !std::is_void<typename OutputIt::container_type::value_type>::value
                                 && is_same_size<typename OutputIt::container_type::value_type,CharT>::value>::type
     > : std::true_type {};
@@ -351,7 +365,7 @@ namespace unicons {
     template<class OutputIt, class CharT>
     struct is_compatible_output_iterator<OutputIt,CharT,
         typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
-                                && std::is_integral<typename std::iterator_traits<OutputIt>::value_type>::value 
+                                && is_character<typename std::iterator_traits<OutputIt>::value_type>::value 
                                 && is_same_size<typename std::iterator_traits<OutputIt>::value_type,CharT>::value>::type
     > : std::true_type {};
 
@@ -372,7 +386,7 @@ namespace unicons {
     };
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
+    typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                             && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, OutputIt target, conv_flags flags=conv_flags::strict) 
     {
@@ -405,7 +419,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
+    typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
             OutputIt target, 
@@ -472,7 +486,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
+    typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
                      OutputIt target, 
@@ -551,7 +565,7 @@ namespace unicons {
     // utf16
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
+    typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
                      OutputIt target, 
@@ -641,7 +655,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
+    typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
             OutputIt target, 
@@ -695,7 +709,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
+    typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
                      OutputIt target, 
@@ -742,7 +756,7 @@ namespace unicons {
     // utf32
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
+    typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
             OutputIt target, 
@@ -821,7 +835,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
+    typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
                      OutputIt target, 
@@ -862,7 +876,7 @@ namespace unicons {
     }
 
     template <class InputIt,class OutputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
+    typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
                      OutputIt target, 
@@ -897,7 +911,7 @@ namespace unicons {
     // validate
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t)
+    typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last) noexcept
     {
@@ -921,7 +935,7 @@ namespace unicons {
     // utf16
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)
+    typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last)  noexcept
     {
@@ -965,7 +979,7 @@ namespace unicons {
 
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t)
+    typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last) noexcept
     {
@@ -1012,7 +1026,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint8_t),uint32_t>::type 
+        typename std::enable_if<is_char8<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
             uint32_t ch = 0;
@@ -1051,7 +1065,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint16_t),uint32_t>::type 
+        typename std::enable_if<is_char16<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
             if (length_ == 0)
@@ -1073,7 +1087,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint32_t),uint32_t>::type 
+        typename std::enable_if<is_char32<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
             if (length_ == 0)
@@ -1121,7 +1135,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint8_t)>::type 
+        typename std::enable_if<is_char8<CharT>::value>::type 
         next() noexcept
         {
             begin_ += length_;
@@ -1143,7 +1157,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint16_t)>::type 
+        typename std::enable_if<is_char16<CharT>::value>::type 
         next() noexcept
         {
             begin_ += length_;
@@ -1192,7 +1206,7 @@ namespace unicons {
         }
 
         template <class CharT = typename std::iterator_traits<Iterator>::value_type>
-        typename std::enable_if<sizeof(CharT) == sizeof(uint32_t)>::type 
+        typename std::enable_if<is_char32<CharT>::value>::type 
         next() noexcept
         {
             begin_ += length_;
@@ -1208,8 +1222,7 @@ namespace unicons {
     }
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value 
-                                   && (sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t) || sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)),
+    typename std::enable_if<(is_char8<typename std::iterator_traits<InputIt>::value_type>::value || is_char16<typename std::iterator_traits<InputIt>::value_type>::value),
                                    sequence<InputIt>>::type 
     sequence_at(InputIt first, InputIt last, std::size_t index) 
     {
@@ -1225,7 +1238,7 @@ namespace unicons {
     }
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,
                                    sequence<InputIt>>::type 
     sequence_at(InputIt first, InputIt last, std::size_t index) 
     {
@@ -1236,7 +1249,7 @@ namespace unicons {
     // u8_length
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t),size_t>::type 
+    typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char8<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
         return std::distance(first,last);
@@ -1245,7 +1258,7 @@ namespace unicons {
     // utf16
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t),size_t>::type 
+    typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char16<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
         conv_flags flags = conv_flags::strict;
@@ -1293,7 +1306,7 @@ namespace unicons {
     // utf32
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),size_t>::type 
+    typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
         std::size_t count = 0;
@@ -1318,8 +1331,7 @@ namespace unicons {
     // u32_length
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value 
-                                   && (sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint8_t) || sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint16_t)),
+    typename std::enable_if<(is_char8<typename std::iterator_traits<InputIt>::value_type>::value || is_char16<typename std::iterator_traits<InputIt>::value_type>::value),
                                    std::size_t>::type 
     u32_length(InputIt first, InputIt last) noexcept
     {
@@ -1335,7 +1347,7 @@ namespace unicons {
     }
 
     template <class InputIt>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<InputIt>::value_type>::value && sizeof(typename std::iterator_traits<InputIt>::value_type) == sizeof(uint32_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,
                                    std::size_t>::type 
     u32_length(InputIt first, InputIt last) noexcept
     {
@@ -1352,7 +1364,7 @@ namespace unicons {
     };
 
     template <class Iterator>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char8<typename std::iterator_traits<Iterator>::value_type>::value,
                             detect_encoding_result<Iterator>>::type 
     detect_encoding(Iterator first, Iterator last) noexcept
     {
@@ -1426,7 +1438,7 @@ namespace unicons {
     };
 
     template <class Iterator>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint8_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char8<typename std::iterator_traits<Iterator>::value_type>::value,
                                    skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
     {
@@ -1451,7 +1463,7 @@ namespace unicons {
     }
 
     template <class Iterator>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint16_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char16<typename std::iterator_traits<Iterator>::value_type>::value,
                                    skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
     {
@@ -1475,7 +1487,7 @@ namespace unicons {
     }
 
     template <class Iterator>
-    typename std::enable_if<std::is_integral<typename std::iterator_traits<Iterator>::value_type>::value && sizeof(typename std::iterator_traits<Iterator>::value_type) == sizeof(uint32_t),
+    typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char32<typename std::iterator_traits<Iterator>::value_type>::value,
                             skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
     {
