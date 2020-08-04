@@ -1302,6 +1302,13 @@ namespace unicons {
             increment(ec);
         }
 
+        codepoint_iterator(Iter first, Iter last, 
+                           conv_flags flags = conv_flags::strict) 
+            : it_(first), last_(last), flags_(flags), length_(0)
+        {
+            operator++();
+        }
+
         constexpr iterator_type base() const
         {
             return it_;
@@ -1345,7 +1352,7 @@ namespace unicons {
                 else
                 {
                     ec = is_legal_utf8(it_, length);
-                    if (ec)
+                    if (!ec)
                     {
                         length_ = length;
                     }
@@ -1517,9 +1524,9 @@ namespace unicons {
     inline codepoint_iterator<InputIt> end(const codepoint_iterator<InputIt>&) noexcept { return codepoint_iterator<InputIt>(); }
 
     template <typename Iter, typename... Args>
-    codepoint_iterator<Iter> make_codepoint_iterator(Iter first, Iter last, Args&& ... args)
+    codepoint_iterator<Iter> make_codepoint_iterator(Iter first, Args&& ... args)
     {
-        return codepoint_iterator<Iter>(first, last, std::forward<Args>(args)...);
+        return codepoint_iterator<Iter>(first, std::forward<Args>(args)...);
     }
 
     // u8_length
