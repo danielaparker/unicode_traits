@@ -2,7 +2,7 @@
 
 The C++ unicode_traits class template makes using unicode easier. 
 
-All you need to do is download one header file, [unicode_traits.hpp](https://raw.githubusercontent.com/danielaparker/unicode_traits/master/src/unicode_traits.hpp), and drop it somewhere in your include path.
+All you need to do is download one header file, [unicode_traits.hpp](https://raw.githubusercontent.com/danielaparker/unicode_traits/master/include/unicode_traits.hpp), and drop it somewhere in your include path.
 
 Consult the [unicode_traits reference](https://github.com/danielaparker/unicode_traits/wiki) for details.
 
