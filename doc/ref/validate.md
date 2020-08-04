@@ -16,7 +16,7 @@ convert_result<InputIt> validate(InputIt first, InputIt last) noexcept
 template <class Iterator>
 struct convert_result
 {
-    Iterator it;
+    Iterator pos;
     conv_errc ec;
 };
 ```
@@ -31,7 +31,7 @@ The user's intention for source encoding scheme is deduced from the character wi
 
 ### Return value
 
-On success, returns a value of type `convert_result` with `it` pointing to `last` in the range [first,last] where validation stopped, and a value initialized [conv_errc](conv_errc).
+On success, returns a value of type `convert_result` with `pos` pointing to `last` in the range [first,last] where validation stopped, and a value initialized [conv_errc](conv_errc).
 
-On error, returns a value of type `convert_result` with `it` pointing to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc()`, the iterator points to the first character of the sequence that is illegal.  
+On error, returns a value of type `convert_result` with `pos` pointing to the location in the range [first,last] where validation stopped. If the error code is not `conv_errc()`, the iterator points to the first character of the sequence that is illegal.  
 

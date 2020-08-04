@@ -17,7 +17,7 @@ convert_result<InputIt> convert(InputIt first, InputIt last, OutputIt target,
 template <class Iterator>
 struct convert_result
 {
-    Iterator it;
+    Iterator pos;
     conv_errc ec;
 };
 
@@ -34,9 +34,9 @@ The user's intentions for source and target encoding schemes are deduced from th
 
 ### Return value
 
-On success, returns a value of type `convert_result` with `it` pointing to `last` in the range [first,last], and a value initialized [conv_errc](conv_errc).
+On success, returns a value of type `convert_result` with `pos` pointing to `last` in the range [first,last], and a value initialized [conv_errc](conv_errc).
 
-On error, returns a value of type `convert_result` with `it` pointing to the location in the range [first,last] where validation stopped, and a [conv_errc](conv_errc) error code. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc()`. If the error code is not `conv_errc()`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
+On error, returns a value of type `convert_result` with `pos` pointing to the location in the range [first,last] where validation stopped, and a [conv_errc](conv_errc) error code. The target is useable if the iterator points to `last`, which will always be the case if the error code is `conv_errc()`. If the error code is not `conv_errc()`, but the iterator points to `last`, the illegal parts of the source sequence will have been replaced with the replacement character `0x0000FFFD`.  
 
 ### Exceptions
 

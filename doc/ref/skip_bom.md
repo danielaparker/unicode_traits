@@ -16,7 +16,7 @@ skip_bom_result<InputIt> skip_bom(InputIt first, InputIt last) noexcept;
 template <class Iterator>
 struct skip_bom_result
 {
-    Iterator it;
+    Iterator pos;
     encoding_errc ec;
 };
 
@@ -30,7 +30,7 @@ first, last | [Input iterators](http://en.cppreference.com/w/cpp/concept/InputIt
 
 ### Return value
 
-On success, returns a value of type `skip_bom_result` with `it` pointing to the bom if present, otherwise to `first`, and a value initialized [encoding_errc](encoding_errc).
+On success, returns a value of type `skip_bom_result` with `pos` pointing to the bom if present, otherwise to `first`, and a value initialized [encoding_errc](encoding_errc).
 
-On error, returns a value of type `skip_bom_result` with `it` pointing to the location in the range [first,last] where validation stopped, and a [encoding_errc](encoding_errc) error code. 
+On error, returns a value of type `skip_bom_result` with `pos` pointing to the location in the range [first,last] where validation stopped, and a [encoding_errc](encoding_errc) error code. 
 

@@ -16,7 +16,7 @@ detect_encoding_result<InputIt> detect_encoding(InputIt first, InputIt last) noe
 template <class Iterator>
 struct detect_encoding_result
 {
-    Iterator it;
+    Iterator pos;
     encoding ec;
 };
 ```
@@ -29,5 +29,5 @@ first, last | [Input iterators](http://en.cppreference.com/w/cpp/concept/InputIt
 
 ### Return value
 
-Returns a value of type `detect_encoding_result` with `it` pointing to one past the bom if present, otherwise to `first`, and a [code](encoding) that indicates the encoding.
+Returns a value of type `detect_encoding_result` with `pos` pointing to one past the bom if present, otherwise to `first`, and a [code](encoding) that indicates the encoding.
 
