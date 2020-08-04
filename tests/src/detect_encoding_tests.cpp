@@ -19,7 +19,7 @@ TEST_CASE("detect bom utf-8")
         std::string input = "\xEF\xBB\xBF[1,2,3]";
         auto result = unicons::detect_encoding(input.begin(),input.end());
         REQUIRE(result.ec == encoding::u8);
-        CHECK(result.pos == (input.begin()+3));
+        CHECK(result.it == (input.begin()+3));
     }
 
     SECTION("")
@@ -27,7 +27,7 @@ TEST_CASE("detect bom utf-8")
         std::string input = "\xEF\xBB\xBF[1,2,3]";
         auto result = unicons::skip_bom(input.begin(),input.end());
         REQUIRE(result.ec == encoding_errc());
-        CHECK(result.pos == (input.begin()+3));
+        CHECK(result.it == (input.begin()+3));
     }
 
     SECTION("")
@@ -35,7 +35,7 @@ TEST_CASE("detect bom utf-8")
         std::string input = "";
         auto result = unicons::skip_bom(input.begin(),input.end());
         REQUIRE(result.ec == encoding_errc());
-        CHECK(result.pos == input.begin());
+        CHECK(result.it == input.begin());
     }
     
     SECTION("")
@@ -43,7 +43,7 @@ TEST_CASE("detect bom utf-8")
         std::string input = "\xEF\xBB\xBF";
         auto result = unicons::skip_bom(input.begin(),input.end());
         REQUIRE(result.ec == encoding_errc());
-        CHECK(result.pos == (input.begin()+3));
+        CHECK(result.it == (input.begin()+3));
     }
 }
 
@@ -55,7 +55,7 @@ TEST_CASE("detect bom utf-16")
     {
         auto result = unicons::skip_bom(input.begin(),input.end());
         REQUIRE(result.ec == unicons::encoding_errc());
-        CHECK(result.pos == (input.begin()+1));
+        CHECK(result.it == (input.begin()+1));
     }
 }
 
@@ -67,7 +67,7 @@ TEST_CASE("detect bom utf-32")
     {
         auto result = unicons::skip_bom(input.begin(),input.end());
         REQUIRE(result.ec == unicons::encoding_errc());
-        CHECK(result.pos == (input.begin()+1));
+        CHECK(result.it == (input.begin()+1));
     }
 }
 

@@ -15,6 +15,12 @@
 
 #ifndef UNICONS_UNICODE_TRAITS_HPP
 #define UNICONS_UNICODE_TRAITS_HPP
+
+#include <string>
+#include <iterator>
+#include <type_traits>
+#include <system_error>
+#include <cstdint>
     
 #define UNICONS_VERSION_MAJOR 0
 #define UNICONS_VERSION_MINOR 5
@@ -30,53 +36,65 @@
 #  define UNICONS_FALLTHROUGH
 #endif
 
-#include <string>
-#include <iterator>
-#include <type_traits>
-#include <system_error>
+// allow to disable exceptions
+#if !defined(UNICONS_NO_EXCEPTIONS)
+    #define UNICONS_THROW(exception) throw exception
+#else
+    #define UNICONS_THROW(exception) std::terminate()
+#endif
 
 namespace unicons {
 
-    #ifndef UNICONS_HAS_VOID_T
+    class unicode_error : public std::system_error
+    {
+    public:
+        unicode_error(std::error_code ec)
+            : std::system_error(ec)
+        {
+        }
+
+        const char* what() const noexcept override
+        {
+            return std::system_error::what();
+        }
+    };
+
     // follows https://en.cppreference.com/w/cpp/types/void_t
     template<typename... Ts> struct make_void { typedef void type;};
     template<typename... Ts> using void_t = typename make_void<Ts...>::type;
-    #else
-    using void_t = std::void_t; 
-    #endif
 
     // is_char8
-    template <class CharT, class Enable=void>
+    template <typename CharT, typename Enable=void>
     struct is_char8 : std::false_type {};
 
-    template <class CharT>
+    template <typename CharT>
     struct is_char8<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
                                                    !std::is_same<CharT,bool>::value &&
                                                    sizeof(uint8_t) == sizeof(CharT)>::type> : std::true_type {};
 
     // is_char16
-    template <class CharT, class Enable=void>
+    template <typename CharT, typename Enable=void>
     struct is_char16 : std::false_type {};
 
-    template <class CharT>
+    template <typename CharT>
     struct is_char16<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
                                                    !std::is_same<CharT,bool>::value &&
                                                    std::is_same<CharT,char16_t>::value || sizeof(uint16_t) == sizeof(CharT)>::type> : std::true_type {};
 
     // is_char32
-    template <class CharT, class Enable=void>
+    template <typename CharT, typename Enable=void>
     struct is_char32 : std::false_type {};
 
-    template <class CharT>
+    template <typename CharT>
     struct is_char32<CharT, typename std::enable_if<std::is_integral<CharT>::value &&
                                                    !std::is_same<CharT,bool>::value &&
                                                    std::is_same<CharT,char32_t>::value || (!std::is_same<CharT,char16_t>::value && sizeof(uint32_t) == sizeof(CharT))>::type> : std::true_type {};
 
     // is_character
-    template <class CharT, class Enable=void>
+    template <typename CharT, typename Enable=void>
     struct is_character : std::false_type {};
 
-    template <class CharT>
+    template <typename CharT>
     struct is_character<CharT, typename std::enable_if<is_char8<CharT>::value || 
                                                        is_char16<CharT>::value ||
                                                        is_char32<CharT>::value>::type> : std::true_type {};
@@ -283,7 +301,7 @@ namespace unicons {
 
     // utf8
 
-    template <class Iterator>
+    template <typename Iterator>
     typename std::enable_if<is_char8<typename std::iterator_traits<Iterator>::value_type>::value, 
                                   conv_errc >::type
     is_legal_utf8(Iterator first, std::size_t length) 
@@ -327,10 +345,10 @@ namespace unicons {
         return conv_errc();
     }
 
-    template <class, class, class = void>
+    template <typename, typename, typename = void>
     struct is_output_iterator : std::false_type {};
 
-    template <class I, class E>
+    template <typename I, typename E>
     struct is_output_iterator<I, E, void_t<
         typename std::iterator_traits<I>::iterator_category,
         decltype(*std::declval<I>() = std::declval<E>())>> : std::true_type {};
@@ -338,22 +356,22 @@ namespace unicons {
     // is_same_size fixes issue with vs2013
 
     // primary template
-    template<class T1, class T2, class Enable = void>
+    template<class T1, typename T2, typename Enable = void>
     struct is_same_size : std::false_type 
     {
     };
      
     // specialization for non void types
-    template<class T1, class T2>
+    template<class T1, typename T2>
     struct is_same_size<T1, T2, typename std::enable_if<!std::is_void<T1>::value && !std::is_void<T2>::value>::type>
     {
         static constexpr bool value = (sizeof(T1) == sizeof(T2));
     }; 
 
-    template<class OutputIt, class CharT, class Enable = void>
+    template<class OutputIt, typename CharT, typename Enable = void>
     struct is_compatible_output_iterator : std::false_type {};
 
-    template<class OutputIt, class CharT>
+    template<class OutputIt, typename CharT>
     struct is_compatible_output_iterator<OutputIt,CharT,
         typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
                                 && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
@@ -362,14 +380,14 @@ namespace unicons {
                                 && is_same_size<typename OutputIt::container_type::value_type,CharT>::value>::type
     > : std::true_type {};
 
-    template<class OutputIt, class CharT>
+    template<class OutputIt, typename CharT>
     struct is_compatible_output_iterator<OutputIt,CharT,
         typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
                                 && is_character<typename std::iterator_traits<OutputIt>::value_type>::value 
                                 && is_same_size<typename std::iterator_traits<OutputIt>::value_type,CharT>::value>::type
     > : std::true_type {};
 
-    template<class OutputIt, class CharT>
+    template<class OutputIt, typename CharT>
     struct is_compatible_output_iterator<OutputIt,CharT,
         typename std::enable_if<is_output_iterator<OutputIt,CharT>::value
                                 && std::is_void<typename std::iterator_traits<OutputIt>::value_type>::value
@@ -378,14 +396,14 @@ namespace unicons {
 
     // convert
 
-    template <class Iterator>
+    template <typename Iterator>
     struct convert_result
     {
-        Iterator pos;
+        Iterator it;
         conv_errc ec;
     };
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                             && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, OutputIt target, conv_flags flags=conv_flags::strict) 
@@ -418,7 +436,7 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -485,7 +503,7 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -564,7 +582,7 @@ namespace unicons {
 
     // utf16
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -654,7 +672,7 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -708,7 +726,7 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -755,7 +773,7 @@ namespace unicons {
 
     // utf32
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint8_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -834,7 +852,7 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint16_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
@@ -875,12 +893,12 @@ namespace unicons {
         return convert_result<InputIt>{first,result} ;
     }
 
-    template <class InputIt,class OutputIt>
+    template <typename InputIt,class OutputIt>
     typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    && is_compatible_output_iterator<OutputIt,uint32_t>::value,convert_result<InputIt>>::type 
     convert(InputIt first, InputIt last, 
-                     OutputIt target, 
-                     conv_flags flags = conv_flags::strict) 
+            OutputIt target, 
+            conv_flags flags = conv_flags::strict) 
     {
         conv_errc  result = conv_errc();
 
@@ -910,7 +928,7 @@ namespace unicons {
 
     // validate
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_char8<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last) noexcept
@@ -934,7 +952,7 @@ namespace unicons {
 
     // utf16
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_char16<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last)  noexcept
@@ -978,7 +996,7 @@ namespace unicons {
     // utf32
 
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_char32<typename std::iterator_traits<InputIt>::value_type>::value
                                    ,convert_result<InputIt>>::type 
     validate(InputIt first, InputIt last) noexcept
@@ -1004,7 +1022,7 @@ namespace unicons {
 
     // sequence 
 
-    template <class Iterator>
+    template <typename Iterator>
     class sequence
     {
         Iterator first_;
@@ -1025,7 +1043,7 @@ namespace unicons {
             return length_;
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char8<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
@@ -1064,7 +1082,7 @@ namespace unicons {
             return ch;
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char16<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
@@ -1086,7 +1104,7 @@ namespace unicons {
             }
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char32<CharT>::value,uint32_t>::type 
         codepoint() const noexcept
         {
@@ -1100,7 +1118,7 @@ namespace unicons {
 
     // sequence_generator
 
-    template <class Iterator>
+    template <typename Iterator>
     class sequence_generator
     {
         Iterator begin_;
@@ -1134,7 +1152,7 @@ namespace unicons {
             return sequence<Iterator>(begin_,length_);
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char8<CharT>::value>::type 
         next() noexcept
         {
@@ -1156,7 +1174,7 @@ namespace unicons {
             }
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char16<CharT>::value>::type 
         next() noexcept
         {
@@ -1205,7 +1223,7 @@ namespace unicons {
             }
         }
 
-        template <class CharT = typename std::iterator_traits<Iterator>::value_type>
+        template <typename CharT = typename std::iterator_traits<Iterator>::value_type>
         typename std::enable_if<is_char32<CharT>::value>::type 
         next() noexcept
         {
@@ -1214,14 +1232,14 @@ namespace unicons {
         }
     };
 
-    template <class Iterator>
+    template <typename Iterator>
     sequence_generator<Iterator> make_sequence_generator(Iterator first, Iterator last,
         conv_flags flags = conv_flags::strict)
     {
         return sequence_generator<Iterator>(first, last, flags);
     }
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<(is_char8<typename std::iterator_traits<InputIt>::value_type>::value || is_char16<typename std::iterator_traits<InputIt>::value_type>::value),
                                    sequence<InputIt>>::type 
     sequence_at(InputIt first, InputIt last, std::size_t index) 
@@ -1237,7 +1255,7 @@ namespace unicons {
         return (!g.done() && count == index) ? g.get() : sequence<InputIt>(last,0);
     }
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,
                                    sequence<InputIt>>::type 
     sequence_at(InputIt first, InputIt last, std::size_t index) 
@@ -1246,9 +1264,261 @@ namespace unicons {
         return index < size ? sequence<InputIt>(first+index,1) : sequence<InputIt>(last,0);
     }
 
+    // codepoint_iterator
+
+    template <typename Iter>
+    class codepoint_iterator
+    {
+        Iter it_;
+        Iter last_;
+        conv_flags flags_;
+        std::size_t length_;
+    public:
+        using iterator_type = Iter;
+        using value_type = uint32_t;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using reference = const value_type&;
+        using iterator_category = std::input_iterator_tag;
+
+        using sequence_type = sequence<Iter>;
+
+        codepoint_iterator()
+            : length_(0)
+        {
+        }
+
+        codepoint_iterator(Iter first, Iter last, 
+                           conv_flags flags, std::error_code& ec) noexcept
+            : it_(first), last_(last), flags_(flags), length_(0)
+        {
+            increment(ec);
+        }
+
+        codepoint_iterator(Iter first, Iter last, 
+                           std::error_code& ec) noexcept
+            : it_(first), last_(last), flags_(conv_flags::strict), length_(0)
+        {
+            increment(ec);
+        }
+
+        constexpr iterator_type base() const
+        {
+            return it_;
+        }
+
+        uint32_t operator*() const noexcept
+        {
+            return get_codepoint();
+        }
+
+        codepoint_iterator& operator++()
+        {
+            std::error_code ec;
+            increment(ec);
+            if (ec)
+            {
+                UNICONS_THROW(unicode_error(ec));
+            }
+            return *this;
+        }
+
+        codepoint_iterator operator++(int) // postfix increment
+        {
+            json_ptr_iterator temp(*this);
+            ++(*this);
+            return temp;
+        }
+
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char8<CharT>::value,codepoint_iterator& >::type 
+        increment(std::error_code& ec) noexcept
+        {
+            it_ += length_;
+            if (it_ != last_)
+            {
+                std::size_t length = trailing_bytes_for_utf8[static_cast<uint8_t>(*it_)] + 1;
+                if (length > (std::size_t)(last_ - it_))
+                {
+                    ec = conv_errc::source_exhausted;
+                }
+                else
+                {
+                    ec = is_legal_utf8(it_, length);
+                    if (ec)
+                    {
+                        length_ = length;
+                    }
+                }
+            }
+            return *this;
+        }
+
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char16<CharT>::value,codepoint_iterator& >::type 
+        increment(std::error_code& ec) noexcept
+        {
+            it_ += length_;
+            if (it_ != last_)
+            {
+                if (it_ != last_)
+                {
+
+                    Iter it = it_;
+
+                    uint32_t ch = *it++;
+                    /* If we have a surrogate pair, validate to uint32_t it. */
+                    if (is_high_surrogate(ch)) 
+                    {
+                        /* If the 16 bits following the high surrogate are in the it buffer... */
+                        if (it < last_) {
+                            uint32_t ch2 = *it;
+                            /* If it's a low surrogate, */
+                            if (ch2 >= sur_low_start && ch2 <= sur_low_end) 
+                            {
+                                ++it;
+                                length_ = 2;
+                            } 
+                            else 
+                            {
+                                ec = conv_errc::unpaired_high_surrogate;
+                            }
+                        } 
+                        else 
+                        { 
+                            // We don't have the 16 bits following the high surrogate.
+                            ec = conv_errc::source_exhausted;
+                        }
+                    } 
+                    else if (is_low_surrogate(ch)) 
+                    {
+                        /* leading low surrogate */
+                        ec = conv_errc::source_illegal;
+                    }
+                    else
+                    {
+                        length_ = 1;
+                    }
+                }
+            }
+            return *this;
+        }
+
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char32<CharT>::value,codepoint_iterator& >::type 
+        increment(std::error_code& ec) noexcept
+        {
+            it_ += length_;
+            length_ = 1;
+            return *this;
+        }
+
+        friend bool operator==(const codepoint_iterator& lhs, const codepoint_iterator& rhs) noexcept
+        {
+            if (rhs.is_end())
+            {
+                return lhs.is_end();
+            }
+            else
+            {
+                return lhs.it_ == rhs.it_;
+            }
+        }
+
+        friend bool operator!=(const codepoint_iterator& lhs, const codepoint_iterator& rhs) noexcept
+        {
+            return !(lhs == rhs);
+        }
+
+        bool is_end() const noexcept
+        {
+            return length_ == 0 || it_ == last_;
+        }
+
+    private:
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char8<CharT>::value,uint32_t>::type 
+        get_codepoint() const noexcept
+        {
+            uint32_t ch = 0;
+            Iter it = it_;
+            switch (length_) 
+            {
+            default:
+                return replacement_char;
+                break;
+            case 4:
+                ch += static_cast<uint8_t>(*it++); ch <<= 6;
+                UNICONS_FALLTHROUGH;
+            case 3:
+                ch += static_cast<uint8_t>(*it++); ch <<= 6;
+                UNICONS_FALLTHROUGH;
+            case 2:
+                ch += static_cast<uint8_t>(*it++); ch <<= 6;
+                UNICONS_FALLTHROUGH;
+            case 1:
+                ch += static_cast<uint8_t>(*it++);
+                ch -= offsets_from_utf8[length_ - 1];
+                break;
+            }
+            if (ch <= max_legal_utf32) 
+            {
+                if (is_surrogate(ch)) 
+                {
+                    ch = replacement_char;
+                }
+            }
+            else // ch > max_legal_utf32
+            {
+                ch = replacement_char;
+            }
+            return ch;
+        }
+
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char16<CharT>::value,uint32_t>::type 
+        get_codepoint() const noexcept
+        {
+            if (length_ == 0)
+            {
+                return replacement_char;
+            }
+            if (length_ == 2)
+            {
+                uint32_t ch = *it_;
+                uint32_t ch2 = *(it_+ 1);
+                ch = ((ch - sur_high_start) << half_shift)
+                     + (ch2 - sur_low_start) + half_base;
+                return ch;
+            }
+            else 
+            {
+                return *it_;
+            }
+        }
+
+        template <typename CharT = typename std::iterator_traits<Iter>::value_type>
+        typename std::enable_if<is_char32<CharT>::value,uint32_t>::type 
+        get_codepoint() const noexcept
+        {
+            if (length_ == 0)
+            {
+                return replacement_char;
+            }
+            return *(it_);
+        }
+
+    };
+
+    template <typename InputIt>
+    inline const codepoint_iterator<InputIt>& begin(const codepoint_iterator<InputIt>& iter) noexcept { return iter; }
+
+    template <typename InputIt>
+    inline codepoint_iterator<InputIt> end(const codepoint_iterator<InputIt>&) noexcept { return codepoint_iterator<InputIt>(); }
+
     // u8_length
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char8<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
@@ -1257,7 +1527,7 @@ namespace unicons {
 
     // utf16
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char16<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
@@ -1305,7 +1575,7 @@ namespace unicons {
 
     // utf32
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,size_t>::type 
     u8_length(InputIt first, InputIt last) noexcept
     {
@@ -1330,7 +1600,7 @@ namespace unicons {
 
     // u32_length
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<(is_char8<typename std::iterator_traits<InputIt>::value_type>::value || is_char16<typename std::iterator_traits<InputIt>::value_type>::value),
                                    std::size_t>::type 
     u32_length(InputIt first, InputIt last) noexcept
@@ -1346,7 +1616,7 @@ namespace unicons {
         return count;
     }
 
-    template <class InputIt>
+    template <typename InputIt>
     typename std::enable_if<is_character<typename std::iterator_traits<InputIt>::value_type>::value && is_char32<typename std::iterator_traits<InputIt>::value_type>::value,
                                    std::size_t>::type 
     u32_length(InputIt first, InputIt last) noexcept
@@ -1356,14 +1626,14 @@ namespace unicons {
 
     enum class encoding {u8,u16le,u16be,u32le,u32be,undetected};
 
-    template <class Iterator>
+    template <typename Iterator>
     struct detect_encoding_result
     {
-        Iterator pos;
+        Iterator it;
         encoding ec;
     };
 
-    template <class Iterator>
+    template <typename Iterator>
     typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char8<typename std::iterator_traits<Iterator>::value_type>::value,
                             detect_encoding_result<Iterator>>::type 
     detect_encoding(Iterator first, Iterator last) noexcept
@@ -1430,14 +1700,14 @@ namespace unicons {
         }
     }
 
-    template <class Iterator>
+    template <typename Iterator>
     struct skip_bom_result
     {
-        Iterator pos;
+        Iterator it;
         encoding_errc ec;
     };
 
-    template <class Iterator>
+    template <typename Iterator>
     typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char8<typename std::iterator_traits<Iterator>::value_type>::value,
                                    skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
@@ -1446,23 +1716,23 @@ namespace unicons {
         switch (result.ec)
         {
         case unicons::encoding::u8:
-            return skip_bom_result<Iterator>{result.pos,encoding_errc()};
+            return skip_bom_result<Iterator>{result.it,encoding_errc()};
             break;
         case unicons::encoding::u16le:
         case unicons::encoding::u16be:
-            return skip_bom_result<Iterator>{result.pos,encoding_errc::expected_u8_found_u16};
+            return skip_bom_result<Iterator>{result.it,encoding_errc::expected_u8_found_u16};
             break;
         case unicons::encoding::u32le:
         case unicons::encoding::u32be:
-            return skip_bom_result<Iterator>{result.pos,encoding_errc::expected_u8_found_u32};
+            return skip_bom_result<Iterator>{result.it,encoding_errc::expected_u8_found_u32};
             break;
         default:
-            return skip_bom_result<Iterator>{result.pos,encoding_errc()};
+            return skip_bom_result<Iterator>{result.it,encoding_errc()};
             break;
         }
     }
 
-    template <class Iterator>
+    template <typename Iterator>
     typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char16<typename std::iterator_traits<Iterator>::value_type>::value,
                                    skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
@@ -1486,7 +1756,7 @@ namespace unicons {
         }
     }
 
-    template <class Iterator>
+    template <typename Iterator>
     typename std::enable_if<is_character<typename std::iterator_traits<Iterator>::value_type>::value && is_char32<typename std::iterator_traits<Iterator>::value_type>::value,
                             skip_bom_result<Iterator>>::type 
     skip_bom(Iterator first, Iterator last) noexcept
