@@ -71,6 +71,22 @@ Moves to the next codepoint.
    constexpr iterator_type base() const noexcept;
 Returns the underlying base iterator.
 
+### Non-member functions
+
+    begin(codepoint_iterator iter);   (1)
+    end(const codepoint_iterator&);   (2)
+
+1) Returns `iter` unchanged
+2) Returns a default-constructed `codepoint_iterator`, which serves as the end iterator. The argument is ignored.
+
+These non-member functions support the use of `codepoint_iterator`s with range-based for loops. 
+
+    template <typename Iter, typename... Args>
+    codepoint_iterator<Iter> make_codepoint_iterator(Iter first, Args&& ... args);
+
+    template <typename InputIt, typename Distance>
+    void advance(InputIt& it, Distance n, std::error_code& ec) noexcept;
+
 ## Examples
 
 ### Reading UTF-16 codepoints (non-throwing)
