@@ -1,4 +1,4 @@
-// Copyright 2016 Daniel Parker
+// Copyright 2016-2020 Daniel Parker
 // Distributed under the Boost license, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -16,8 +16,8 @@
 #ifndef UNICONS_UNICODE_TRAITS_HPP
 #define UNICONS_UNICODE_TRAITS_HPP
     
-#define UNICONS_VERSION_MAJOR 1
-#define UNICONS_VERSION_MINOR 0
+#define UNICONS_VERSION_MAJOR 0
+#define UNICONS_VERSION_MINOR 5
 #define UNICONS_VERSION_PATCH 0
 
 #if defined(__clang__) 
@@ -381,7 +381,7 @@ namespace unicons {
     template <class Iterator>
     struct convert_result
     {
-        Iterator it;
+        Iterator pos;
         conv_errc ec;
     };
 
@@ -1359,7 +1359,7 @@ namespace unicons {
     template <class Iterator>
     struct detect_encoding_result
     {
-        Iterator it;
+        Iterator pos;
         encoding ec;
     };
 
@@ -1433,7 +1433,7 @@ namespace unicons {
     template <class Iterator>
     struct skip_bom_result
     {
-        Iterator it;
+        Iterator pos;
         encoding_errc ec;
     };
 
@@ -1446,18 +1446,18 @@ namespace unicons {
         switch (result.ec)
         {
         case unicons::encoding::u8:
-            return skip_bom_result<Iterator>{result.it,encoding_errc()};
+            return skip_bom_result<Iterator>{result.pos,encoding_errc()};
             break;
         case unicons::encoding::u16le:
         case unicons::encoding::u16be:
-            return skip_bom_result<Iterator>{result.it,encoding_errc::expected_u8_found_u16};
+            return skip_bom_result<Iterator>{result.pos,encoding_errc::expected_u8_found_u16};
             break;
         case unicons::encoding::u32le:
         case unicons::encoding::u32be:
-            return skip_bom_result<Iterator>{result.it,encoding_errc::expected_u8_found_u32};
+            return skip_bom_result<Iterator>{result.pos,encoding_errc::expected_u8_found_u32};
             break;
         default:
-            return skip_bom_result<Iterator>{result.it,encoding_errc()};
+            return skip_bom_result<Iterator>{result.pos,encoding_errc()};
             break;
         }
     }
