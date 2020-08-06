@@ -1319,6 +1319,11 @@ namespace unicons {
             return it_;
         }
 
+        std::pair<iterator_type,std::size_t> sequence() const noexcept
+        {
+            return std::make_pair(it_,length_);
+        }
+
         uint32_t operator*() const noexcept
         {
             return get_codepoint();
@@ -1344,9 +1349,9 @@ namespace unicons {
 
         template <typename CharT = typename std::iterator_traits<Iter>::value_type>
         typename std::enable_if<is_char8<CharT>::value,codepoint_iterator& >::type 
-        increment(std::error_code& ec) noexcept
+        increment(std::error_code& ec) 
         {
-            it_ += length_;
+            std::advance(it_,length_);
             if (it_ != last_)
             {
                 std::size_t length = trailing_bytes_for_utf8[static_cast<uint8_t>(*it_)] + 1;
@@ -1368,9 +1373,9 @@ namespace unicons {
 
         template <typename CharT = typename std::iterator_traits<Iter>::value_type>
         typename std::enable_if<is_char16<CharT>::value,codepoint_iterator& >::type 
-        increment(std::error_code& ec) noexcept
+        increment(std::error_code& ec) 
         {
-            it_ += length_;
+            std::advance(it_,length_);
             if (it_ != last_)
             {
                 if (it_ != last_)
@@ -1418,9 +1423,9 @@ namespace unicons {
 
         template <typename CharT = typename std::iterator_traits<Iter>::value_type>
         typename std::enable_if<is_char32<CharT>::value,codepoint_iterator& >::type 
-        increment(std::error_code&) noexcept
+        increment(std::error_code&) 
         {
-            it_ += length_;
+            std::advance(it_,length_);
             length_ = 1;
             return *this;
         }
@@ -1495,10 +1500,11 @@ namespace unicons {
             {
                 return replacement_char;
             }
+            Iter it = it_;
             if (length_ == 2)
             {
-                uint32_t ch = *it_;
-                uint32_t ch2 = *(it_+ 1);
+                uint32_t ch = *it++;
+                uint32_t ch2 = *it;
                 ch = ((ch - sur_high_start) << half_shift)
                      + (ch2 - sur_low_start) + half_base;
                 return ch;
